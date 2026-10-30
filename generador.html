@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Estudio Generador de Invitaciones, Fotos & Pases VIP | Aura Digital</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="bg-stone-100 text-stone-800 antialiased">
+
+  <!-- Barra Superior del Estudio -->
+  <header class="bg-stone-900 text-white border-b border-stone-700 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="px-3 py-1.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-xs font-semibold text-stone-200 flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-arrow-left"></i> Catálogo
+        </a>
+        <div class="hidden sm:block">
+          <span class="font-serif-luxury text-xl font-bold text-amber-400">Estudio Generador</span>
+          <span id="active-client-badge" class="ml-2 px-2.5 py-0.5 rounded-full bg-stone-800 text-stone-300 text-[11px] font-semibold">
+            Modo Plantilla Libre
+          </span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <a href="configuracion.html" id="gen-admin-cfg-btn" class="px-3 py-1.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-xs font-semibold text-stone-200 border border-stone-700 transition">
+          <i class="fa-solid fa-users-gear mr-1 text-emerald-400"></i> CRM Clientes / Admin
+        </a>
+        <button onclick="saveCurrentClientProject()" id="gen-client-save-btn" class="hidden px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white shadow transition">
+          <i class="fa-solid fa-floppy-disk mr-1"></i> Guardar en Ficha del Cliente
+        </button>
+        <button onclick="saveAsCatalogPreset()" id="gen-admin-save-btn" class="px-3 py-1.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-xs font-semibold text-amber-300 border border-stone-700 transition" title="Guardar cambios como plantilla del catálogo">
+          <i class="fa-solid fa-bookmark mr-1"></i> Guardar en Catálogo
+        </button>
+        <button onclick="exportJsonConfig()" class="px-3 py-1.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-xs font-semibold text-stone-200 border border-stone-700 transition" title="Descargar respaldo JSON del cliente">
+          <i class="fa-solid fa-download mr-1 text-amber-400"></i> JSON
+        </button>
+        <a id="open-fullscreen-btn" href="invitacion.html?demo=custom&formato=web" target="_blank" class="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-xs font-bold text-white shadow flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-up-right-from-square"></i> Pantalla Completa
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenedor Principal -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6 grid lg:grid-cols-12 gap-6 pb-20">
+
+    <!-- Panel Izquierdo: Editor, Subida de Fotos, Paletas y Pases VIP -->
+    <div class="lg:col-span-7 bg-white rounded-3xl border border-stone-200 shadow-sm overflow-hidden flex flex-col">
+
+      <!-- Barra de Selección: Cliente del CRM o Plantilla Base -->
+      <div class="p-4 bg-stone-50 border-b border-stone-200 grid sm:grid-cols-2 gap-3">
+        <div id="crm-client-selector-box">
+          <label class="block text-[10px] font-bold uppercase tracking-wider text-emerald-800 mb-1">
+            <i class="fa-solid fa-user-check mr-1"></i> 1. Trabajar en Pedido de Cliente (CRM):
+          </label>
+          <select id="client-order-selector" onchange="loadClientOrderIntoForm(this.value)" class="w-full rounded-xl border border-emerald-300 bg-emerald-50/60 px-3 py-1.5 text-xs font-bold text-stone-900">
+            <option value="">-- Ninguno (Diseño Libre) --</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-bold uppercase tracking-wider text-stone-600 mb-1">
+            <i class="fa-solid fa-layer-group mr-1"></i> 2. O Cargar Plantilla Base del Catálogo:
+          </label>
+          <select id="preset-selector" onchange="loadPresetIntoForm(this.value)" class="w-full rounded-xl border border-stone-300 bg-white px-3 py-1.5 text-xs font-bold text-stone-900">
+          </select>
+        </div>
+      </div>
+
+      <!-- Pestañas del Editor -->
+      <div class="grid grid-cols-5 border-b border-stone-200 bg-stone-100/70 text-[11px] sm:text-xs font-bold text-stone-600">
+        <button onclick="switchEditorTab(1)" id="tab-btn-1" class="py-3.5 px-2 border-b-2 border-amber-700 text-amber-800 bg-white">
+          1. Textos
+        </button>
+        <button onclick="switchEditorTab(2)" id="tab-btn-2" class="py-3.5 px-2 border-b-2 border-transparent hover:text-stone-900">
+          2. Temas & Fotos
+        </button>
+        <button onclick="switchEditorTab(3)" id="tab-btn-3" class="py-3.5 px-2 border-b-2 border-transparent hover:text-stone-900">
+          3. Lugares
+        </button>
+        <button onclick="switchEditorTab(4)" id="tab-btn-4" class="py-3.5 px-2 border-b-2 border-transparent hover:text-stone-900">
+          4. Regalos/RSVP
+        </button>
+        <button onclick="switchEditorTab(5)" id="tab-btn-5" class="py-3.5 px-2 border-b-2 border-transparent hover:text-stone-900 text-emerald-800">
+          5. Pases VIP ★
+        </button>
+      </div>
+
+      <!-- Contenido de las Pestañas -->
+      <div class="p-6 space-y-5 flex-1">
+
+        <!-- PESTAÑA 1: TEXTOS Y ANFITRIONES -->
+        <div id="editor-tab-1" class="space-y-4">
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold uppercase text-stone-600 mb-1">Título del Evento (Categoría)</label>
+              <input type="text" id="f-categoryLabel" oninput="saveAndRefreshPreview()" class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase text-stone-600 mb-1">Subtítulo / Etiqueta Superior</label>
+              <input type="text" id="f-badgeText" oninput="saveAndRefreshPreview()" class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase text-stone-600 mb-1">Nombres de los Festejados (Título Principal)</label>
+            <input type="text" id="f-title" oninput="saveAndRefreshPreview()" class="w-full rounded-xl border border-stone-300 px-3 py-2 text-base font-bold text-stone-900" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase text-stone-600 mb-1">Mensaje de Bienvenida</label>
+            <input type="text" id="f-subtitle" oninput="saveAndRefreshPreview()" class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase text-stone-600 mb-1">Frase Emotiva</label>
+            <textarea id="f-quote" rows="2" oninput="saveAndRefreshPreview()" class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm"></textarea>
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold uppercase text-stone-600 mb-1">Anfitriones / Padres (Columna 1)</label>
+              <input type="text" id="f-hostsLeft" oninput="saveAndRefreshPreview()" placeholder="Separados por coma" class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase text-stone-600 mb-1">Anfitriones / Padrinos (Columna 2)</label>
+              <input type="text" id="f-hostsRight" oninput="saveAndRefreshPreview()" placeholder="Separados por coma" class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm" />
+            </div>
+          </div>
+        </div>
+
+        <!-- PESTAÑA 2 (NUEVA): PALETAS DE DISEÑO Y CARGA DE FOTOS DESDE TU COMPUTADORA -->
+        <div id="editor-tab-2" class="hidden space-y-6">
+
+          <!-- Selector de 9 Paletas de Diseño Profesionales -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-2">
+              <i class="fa-solid fa-palette text-amber-700 mr-1"></i> Paletas de Diseño Profesionales (Clic para aplicar)
+            </label>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5" id="palettes-grid">
+              <!-- Se genera desde DESIGN_PALETTES -->
+            </div>
+          </div>
+
+          <!-- Personalización fina de color y melodía -->
+          <div class="grid sm:grid-cols-3 gap-4 p-4 rounded-2xl bg-stone-50 border border-stone-200">
+            <div>
+              <label class="block text-[11px] font-bold uppercase text-stone-600 mb-1">Color Principal</label>
+              <input type="color" id="f-colorPrimary" oninput="saveAndRefreshPreview()" class="w-full h-9 rounded-xl border border-stone-300 cursor-pointer" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold uppercase text-stone-600 mb-1">Color Fondo Suave</label>
+              <input type="color" id="f-colorSecondary" oninput="saveAndRefreshPreview()" class="w-full h-9 rounded-xl border border-stone-300 cursor-pointer" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold uppercase text-stone-600 mb-1">Melodía Musical</label>
+              <select id="f-melody" onchange="saveAndRefreshPreview()" class="w-full rounded-xl border border-stone-300 bg-white px-2.5 py-2 text-xs font-semibold">
+                <option value="romantic">Piano Romántico</option>
+                <option value="waltz">Vals de Gala</option>
+                <option value="lullaby">Dulce Cielo</option>
+                <option value="festive">Celebración Alegre</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Carga de Fotografía de Portada desde tu Computadora -->
+          <div class="p-4 rounded-2xl bg-amber-50/60 border border-amber-200 space-y-3">
+            <div class="flex items-center justify-between">
+              <div>
+                <h4 class="text-xs font-bold uppercase tracking-wider text-amber-900">
+                  <i class="fa-solid fa-camera-retro mr-1"></i> Fotografía Principal de Portada
+                </h4>
+                <p class="text-[11px] text-stone-600">Sube una foto desde tu computadora (se optimiza automáticamente) o pega un enlace.</p>
+              </div>
+              <label class="px-3.5 py-2 rounded-xl bg-amber-700 hover:bg-amber-800 text-white text-xs font-bold cursor-pointer shadow transition shrink-0">
+                <i class="fa-solid fa-upload mr-1"></i> Subir desde mi PC
+                <input type="file" accept="image/*" class="hidden" onchange="handleHeroFileUpload(this)" />
+              </label>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <img id="preview-thumb-hero" src="" alt="Miniatura Portada" class="w-16 h-16 rounded-xl object-cover border border-stone-300 shrink-0" />
+              <input type="text" id="f-heroImage" oninput="saveAndRefreshPreview()" placeholder="O pega aquí la URL de una imagen..." class="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-xs" />
+            </div>
+          </div>
+
+          <!-- Carga de las 4 Fotos de Galería desde tu Computadora -->
+          <div class="p-4 rounded-2xl bg-stone-50 border border-stone-200 space-y-3">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-stone-700">
+              <i class="fa-solid fa-images text-amber-700 mr-1"></i> Galería de Fotos del Evento (4 Fotografías)
+            </h4>
+            <div class="grid sm:grid-cols-2 gap-3" id="gallery-upload-slots">
+              <!-- Se llena dinámicamente para las 4 fotos -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- PESTAÑA 3: FECHA Y LUGARES -->
+        <div id="editor-tab-3" class="hidden space-y-4">
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold uppercase text-stone-600 mb-1">Fecha y Hora Exacta (Cuenta Regresiva)</label>
+              <input type="datetime-local" id="f-date" oninput="saveAndRefreshPreview()" class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase text-stone-600 mb-1">Fecha en Texto Elegante</label>
+              <input type="text" id="f-dateText" oninput="saveAndRefreshPreview()" placeholder="Ej. Sábado 20 de Febrero de 2027" class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm" />
+            </div>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-stone-50 border border-stone-200 space-y-3">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-amber-800"><i class="fa-solid fa-church mr-1"></i> Ceremonia</h4>
+            <div class="grid sm:grid-cols-2 gap-3">
+              <input type="text" id="f-ceremonyName" oninput="saveAndRefreshPreview()" placeholder="Lugar de la Ceremonia" class="rounded-xl border border-stone-300 px-3 py-2 text-sm" />
+              <input type="text" id="f-ceremonyTime" oninput="saveAndRefreshPreview()" placeholder="Hora (Ej. 17:00 HRS)" class="rounded-xl border border-stone-300 px-3 py-2 text-sm" />
+            </div>
+            <input type="text" id="f-ceremonyAddress" oninput="saveAndRefreshPreview()" placeholder="Dirección completa" class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm" />
+            <input type="text" id="f-ceremonyMap" oninput="saveAndRefreshPreview()" placeholder="Link de Google Maps" class="w-full rounded-xl border border-stone-300 px-3 py-2 text-xs" />
+          </div>
+
+          <div class="p-4 rounded-2xl bg-stone-50 border border-stone-200 space-y-3">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-amber-800"><i class="fa-solid fa-champagne-glasses mr-1"></i> Recepción / Fiesta</h4>
+            <div class="grid sm:grid-cols-2 gap-3">
+              <input type="text" id="f-receptionName" oninput="saveAndRefreshPreview()" placeholder="Lugar de la Recepción" class="rounded-xl border border-stone-300 px-3 py-2 text-sm" />
+              <input type="text" id="f-receptionTime" oninput="saveAndRefreshPreview()" placeholder="Hora (Ej. 19:30 HRS)" class="rounded-xl border border-stone-300 px-3 py-2 text-sm" />
+            </div>
+            <input type="text" id="f-receptionAddress" oninput="saveAndRefreshPreview()" placeholder="Dirección completa" class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm" />
+            <input type="text" id="f-receptionMap" oninput="saveAndRefreshPreview()" placeholder="Link de Google Maps" class="w-full rounded-xl border border-stone-300 px-3 py-2 text-xs" />
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold uppercase text-stone-600 mb-1">Código de Vestimenta</label>
+              <input type="text" id="f-dressTitle" oninput="saveAndRefreshPreview()" class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase text-stone-600 mb-1">Detalles de Vestimenta</label>
+              <input type="text" id="f-dressDesc" oninput="saveAndRefreshPreview()" class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm" />
+            </div>
+          </div>
+        </div>
+
+        <!-- PESTAÑA 4: MESA DE REGALOS Y CONFIRMACIÓN RSVP -->
+        <div id="editor-tab-4" class="hidden space-y-4">
+          <div class="p-4 rounded-2xl bg-stone-50 border border-stone-200 space-y-3">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-amber-800"><i class="fa-solid fa-building-columns mr-1"></i> Datos Bancarios / Lluvia de Sobres</h4>
+            <div class="grid sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[11px] font-bold text-stone-500 mb-1">Banco</label>
+                <input type="text" id="f-bankName" oninput="saveAndRefreshPreview()" class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-stone-500 mb-1">Beneficiario</label>
+                <input type="text" id="f-bankBeneficiary" oninput="saveAndRefreshPreview()" class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm" />
+              </div>
+            </div>
+            <div class="grid sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[11px] font-bold text-stone-500 mb-1">CLABE Interbancaria (18 dígitos)</label>
+                <input type="text" id="f-bankClabe" oninput="saveAndRefreshPreview()" class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm font-mono" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-stone-500 mb-1">Concepto sugerido</label>
+                <input type="text" id="f-bankConcept" oninput="saveAndRefreshPreview()" class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm" />
+              </div>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200 space-y-3">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-900"><i class="fa-brands fa-whatsapp mr-1"></i> Configuración de Confirmaciones (RSVP)</h4>
+            <div class="grid sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[11px] font-bold text-stone-600 mb-1">WhatsApp que recibe confirmaciones (Con 521)</label>
+                <input type="text" id="f-rsvpWhatsapp" oninput="saveAndRefreshPreview()" placeholder="Ej. 5215512345678" class="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-stone-600 mb-1">Fecha límite para confirmar</label>
+                <input type="text" id="f-rsvpDeadline" oninput="saveAndRefreshPreview()" placeholder="Ej. 20 de Enero de 2027" class="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PESTAÑA 5: GENERADOR DE PASES VIP POR FAMILIA -->
+        <div id="editor-tab-5" class="hidden space-y-4">
+          <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4">
+            <h4 class="font-serif-luxury text-xl font-bold text-stone-900">Generador Masivo de Pases Personalizados (Paquete VIP)</h4>
+            <p class="text-xs text-stone-600 mt-1">
+              Escribe un invitado o familia por línea seguido de una coma y el número de boletos asignados. Cada enlace incluye los datos del evento para poder enviarse por WhatsApp.
+            </p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase text-stone-700 mb-1">Lista de Invitados (Formato: Nombre de Familia, Número de Pases)</label>
+            <textarea id="vip-guest-list-input" rows="5" class="w-full rounded-xl border border-stone-300 px-3.5 py-2.5 text-sm font-mono" oninput="generateVipLinksTable()">Familia Gómez Pérez, 4
+Tíos Hernández Vega, 2
+Lic. Roberto Salgado y Esposa, 2
+Madrina Claudia Herrera, 3
+Primo Diego Emiliano, 1</textarea>
+          </div>
+
+          <div class="border border-stone-200 rounded-2xl overflow-hidden">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-stone-100 text-stone-600 uppercase border-b border-stone-200">
+                  <th class="py-2.5 px-3">Familia / Invitado</th>
+                  <th class="py-2.5 px-2 text-center">Pases</th>
+                  <th class="py-2.5 px-3 text-right">Acciones Rápidas</th>
+                </tr>
+              </thead>
+              <tbody id="vip-links-tbody" class="divide-y divide-stone-200 bg-white">
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Panel Derecho: Previsualizador en Vivo en los 3 Formatos -->
+    <div class="lg:col-span-5 flex flex-col items-center">
+      <div class="w-full bg-stone-900 text-white rounded-2xl p-3 mb-3 flex items-center justify-between text-xs">
+        <span class="font-semibold text-amber-300"><i class="fa-solid fa-mobile-screen mr-1"></i> Previsualización en Vivo:</span>
+        <div class="flex gap-1 bg-stone-800 p-1 rounded-xl">
+          <button onclick="setPreviewFormat('web')" id="prev-btn-web" class="px-2.5 py-1 rounded-lg bg-amber-600 text-white font-semibold">Web</button>
+          <button onclick="setPreviewFormat('video')" id="prev-btn-video" class="px-2.5 py-1 rounded-lg text-stone-300 hover:text-white font-semibold">Video</button>
+          <button onclick="setPreviewFormat('pdf')" id="prev-btn-pdf" class="px-2.5 py-1 rounded-lg text-stone-300 hover:text-white font-semibold">PDF</button>
+        </div>
+      </div>
+
+      <div class="w-full h-[680px] bg-stone-900 rounded-[36px] p-2.5 shadow-2xl border-4 border-stone-800">
+        <iframe id="live-preview-iframe" src="invitacion.html?demo=custom&formato=web&modo=invitado" class="w-full h-full rounded-[26px] bg-white border-0"></iframe>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="js/data.js"></script>
+  <script>
+    let workingData = null;
+    let activeClientId = null;
+    let previewFormat = "web";
+    let debounceTimer = null;
+
+    function initGenerator() {
+      const cfg = window.getBusinessConfig();
+      const isAdminView = window.hasEffectiveAdminView();
+
+      window.renderAdminFloatingBar();
+
+      if (!isAdminView && !cfg.clientVisibility.allowClientGenerator) {
+        document.body.innerHTML = `
+          <div class="min-h-screen bg-stone-950 flex items-center justify-center p-4 text-center">
+            <div class="max-w-md w-full bg-white rounded-3xl p-8 shadow-2xl border border-stone-200">
+              <div class="w-16 h-16 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center text-2xl mx-auto mb-4">
+                <i class="fa-solid fa-lock"></i>
+              </div>
+              <span class="text-xs font-bold uppercase tracking-widest text-amber-700">Herramienta Interna</span>
+              <h1 class="font-serif-luxury text-3xl font-bold text-stone-900 mt-1">Estudio Exclusivo para Administrador</h1>
+              <p class="text-xs text-stone-500 mt-2 leading-relaxed">
+                El generador de invitaciones y pases VIP está configurado actualmente para uso exclusivo del propietario.
+              </p>
+              <div class="mt-6 space-y-2.5">
+                <a href="configuracion.html" class="block w-full py-3.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs shadow transition">
+                  <i class="fa-solid fa-user-shield mr-1 text-amber-400"></i> Iniciar Sesión con mi Perfil Admin
+                </a>
+                <a href="index.html" class="block w-full py-3 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold text-xs transition">
+                  ← Volver al Catálogo Público
+                </a>
+              </div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      if (!isAdminView) {
+        document.getElementById("gen-admin-cfg-btn").classList.add("hidden");
+        document.getElementById("gen-admin-save-btn").classList.add("hidden");
+        document.getElementById("crm-client-selector-box").classList.add("hidden");
+      }
+
+      // Renderizar Paletas de Diseño Profesionales
+      renderPalettesGrid();
+
+      // Poblar selector de Plantillas Base
+      const allPresets = window.getEventPresets();
+      const selector = document.getElementById("preset-selector");
+      selector.innerHTML = Object.keys(allPresets).map(k => `<option value="${k}">${allPresets[k].categoryLabel} (${allPresets[k].title})</option>`).join("");
+
+      // Poblar selector de Clientes del CRM
+      const orders = window.getClientOrders();
+      const clientSel = document.getElementById("client-order-selector");
+      clientSel.innerHTML = `<option value="">-- Ninguno (Diseño Libre) --</option>` +
+        orders.map(o => `<option value="${o.id}">👤 ${o.clientName} — ${o.eventTitle} (${o.status})</option>`).join("");
+
+      const params = new URLSearchParams(window.location.search);
+      const urlClient = params.get("cliente");
+      const initialPreset = params.get("plantilla") || "boda";
+
+      if (urlClient && window.getClientOrderById(urlClient)) {
+        clientSel.value = urlClient;
+        loadClientOrderIntoForm(urlClient);
+      } else {
+        selector.value = initialPreset in allPresets ? initialPreset : "boda";
+        loadPresetIntoForm(selector.value);
+      }
+    }
+
+    function renderPalettesGrid() {
+      const grid = document.getElementById("palettes-grid");
+      const palettes = window.DESIGN_PALETTES;
+      grid.innerHTML = Object.keys(palettes).map(key => {
+        const p = palettes[key];
+        return `
+          <button type="button" onclick="applyDesignPalette('${key}')" class="p-2.5 rounded-xl border border-stone-200 hover:border-amber-600 bg-white flex items-center gap-2.5 text-left transition shadow-sm">
+            <div class="flex -space-x-1.5 shrink-0">
+              <span class="w-5 h-5 rounded-full border border-white shadow" style="background-color: ${p.primary};"></span>
+              <span class="w-5 h-5 rounded-full border border-stone-200 shadow" style="background-color: ${p.secondary};"></span>
+              <span class="w-5 h-5 rounded-full border border-white shadow" style="background-color: ${p.dark};"></span>
+            </div>
+            <span class="text-[11px] font-bold text-stone-800 leading-tight line-clamp-2">${p.name}</span>
+          </button>
+        `;
+      }).join("");
+    }
+
+    function applyDesignPalette(paletteKey) {
+      const p = window.DESIGN_PALETTES[paletteKey];
+      if (!p || !workingData) return;
+      workingData.theme.primary = p.primary;
+      workingData.theme.secondary = p.secondary;
+      workingData.theme.accent = p.accent;
+      workingData.theme.dark = p.dark;
+
+      document.getElementById("f-colorPrimary").value = p.primary;
+      document.getElementById("f-colorSecondary").value = p.secondary;
+      saveAndRefreshPreview();
+    }
+
+    function loadClientOrderIntoForm(clientId) {
+      if (!clientId) {
+        activeClientId = null;
+        document.getElementById("active-client-badge").textContent = "Modo Plantilla Libre";
+        document.getElementById("gen-client-save-btn").classList.add("hidden");
+        loadPresetIntoForm(document.getElementById("preset-selector").value || "boda");
+        return;
+      }
+
+      const ord = window.getClientOrderById(clientId);
+      if (!ord) return;
+
+      activeClientId = clientId;
+      document.getElementById("active-client-badge").textContent = `Cliente: ${ord.clientName} (${ord.eventTitle})`;
+      document.getElementById("gen-client-save-btn").classList.remove("hidden");
+
+      const allPresets = window.getEventPresets();
+      if (ord.invitationData) {
+        workingData = JSON.parse(JSON.stringify(ord.invitationData));
+      } else {
+        const base = allPresets[ord.presetBase] || allPresets.boda;
+        workingData = JSON.parse(JSON.stringify(base));
+        workingData.title = ord.eventTitle || base.title;
+        if (ord.eventDate) {
+          workingData.date = ord.eventDate + "T18:00:00";
+        }
+      }
+
+      if (ord.vipGuestsRaw) {
+        document.getElementById("vip-guest-list-input").value = ord.vipGuestsRaw;
+      }
+
+      populateFormFieldsFromWorkingData();
+      saveToLocalStorageAndReloadIframe();
+      generateVipLinksTable();
+    }
+
+    function loadPresetIntoForm(presetKey) {
+      activeClientId = null;
+      document.getElementById("client-order-selector").value = "";
+      document.getElementById("active-client-badge").textContent = "Modo Plantilla Libre";
+      document.getElementById("gen-client-save-btn").classList.add("hidden");
+
+      const allPresets = window.getEventPresets();
+      const base = allPresets[presetKey] || allPresets.boda;
+      workingData = JSON.parse(JSON.stringify(base));
+
+      populateFormFieldsFromWorkingData();
+      saveToLocalStorageAndReloadIframe();
+      generateVipLinksTable();
+    }
+
+    function populateFormFieldsFromWorkingData() {
+      document.getElementById("f-categoryLabel").value = workingData.categoryLabel;
+      document.getElementById("f-badgeText").value = workingData.badgeText;
+      document.getElementById("f-title").value = workingData.title;
+      document.getElementById("f-subtitle").value = workingData.subtitle;
+      document.getElementById("f-quote").value = workingData.quote;
+      document.getElementById("f-hostsLeft").value = (workingData.hostsLeft || []).join(", ");
+      document.getElementById("f-hostsRight").value = (workingData.hostsRight || []).join(", ");
+      document.getElementById("f-colorPrimary").value = workingData.theme.primary || "#8C6D46";
+      document.getElementById("f-colorSecondary").value = workingData.theme.secondary || "#FDFBF7";
+      document.getElementById("f-melody").value = workingData.theme.melodyType || "romantic";
+      document.getElementById("f-heroImage").value = workingData.heroImage;
+      document.getElementById("preview-thumb-hero").src = workingData.heroImage;
+
+      renderGalleryUploadSlots();
+
+      document.getElementById("f-date").value = (workingData.date || "2027-02-20T17:00").slice(0, 16);
+      document.getElementById("f-dateText").value = workingData.dateText;
+      document.getElementById("f-ceremonyName").value = workingData.ceremony.name;
+      document.getElementById("f-ceremonyTime").value = workingData.ceremony.time;
+      document.getElementById("f-ceremonyAddress").value = workingData.ceremony.address;
+      document.getElementById("f-ceremonyMap").value = workingData.ceremony.mapUrl;
+
+      document.getElementById("f-receptionName").value = workingData.reception.name;
+      document.getElementById("f-receptionTime").value = workingData.reception.time;
+      document.getElementById("f-receptionAddress").value = workingData.reception.address;
+      document.getElementById("f-receptionMap").value = workingData.reception.mapUrl;
+
+      document.getElementById("f-dressTitle").value = workingData.dressCode.title;
+      document.getElementById("f-dressDesc").value = workingData.dressCode.description;
+
+      document.getElementById("f-bankName").value = workingData.gifts.bank.bankName;
+      document.getElementById("f-bankBeneficiary").value = workingData.gifts.bank.beneficiary;
+      document.getElementById("f-bankClabe").value = workingData.gifts.bank.clabe;
+      document.getElementById("f-bankConcept").value = workingData.gifts.bank.concept;
+
+      document.getElementById("f-rsvpWhatsapp").value = workingData.rsvpWhatsapp;
+      document.getElementById("f-rsvpDeadline").value = workingData.rsvpDeadline;
+    }
+
+    function renderGalleryUploadSlots() {
+      const container = document.getElementById("gallery-upload-slots");
+      if (!workingData.gallery || workingData.gallery.length < 4) {
+        workingData.gallery = [
+          workingData.heroImage,
+          workingData.heroImage,
+          workingData.heroImage,
+          workingData.heroImage
+        ];
+      }
+
+      container.innerHTML = workingData.gallery.slice(0, 4).map((imgUrl, idx) => `
+        <div class="p-2.5 rounded-xl bg-white border border-stone-200 flex items-center gap-2.5">
+          <img id="gallery-thumb-${idx}" src="${imgUrl}" alt="Foto ${idx + 1}" class="w-12 h-12 rounded-lg object-cover border border-stone-200 shrink-0" />
+          <div class="flex-1 min-w-0 space-y-1">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-bold text-stone-500 uppercase">Foto Galería ${idx + 1}</span>
+              <label class="text-[10px] font-bold text-amber-800 hover:underline cursor-pointer">
+                <i class="fa-solid fa-upload mr-0.5"></i> Subir PC
+                <input type="file" accept="image/*" class="hidden" onchange="handleGalleryFileUpload(this, ${idx})" />
+              </label>
+            </div>
+            <input type="text" value="${imgUrl}" oninput="updateGalleryUrl(${idx}, this.value)" class="w-full rounded border border-stone-200 px-2 py-1 text-[10px]" placeholder="URL de imagen..." />
+          </div>
+        </div>
+      `).join("");
+    }
+
+    async function handleHeroFileUpload(inputEl) {
+      const file = inputEl.files && inputEl.files[0];
+      if (!file) return;
+      try {
+        const compressedDataUrl = await window.compressImageFile(file, 1100, 0.8);
+        workingData.heroImage = compressedDataUrl;
+        document.getElementById("f-heroImage").value = compressedDataUrl;
+        document.getElementById("preview-thumb-hero").src = compressedDataUrl;
+        saveAndRefreshPreview();
+      } catch (e) {
+        alert("No se pudo procesar la imagen seleccionada.");
+      }
+    }
+
+    async function handleGalleryFileUpload(inputEl, idx) {
+      const file = inputEl.files && inputEl.files[0];
+      if (!file) return;
+      try {
+        const compressedDataUrl = await window.compressImageFile(file, 850, 0.78);
+        workingData.gallery[idx] = compressedDataUrl;
+        renderGalleryUploadSlots();
+        saveAndRefreshPreview();
+      } catch (e) {
+        alert("No se pudo procesar la imagen seleccionada.");
+      }
+    }
+
+    function updateGalleryUrl(idx, val) {
+      if (!workingData.gallery) workingData.gallery = [];
+      workingData.gallery[idx] = val;
+      const thumb = document.getElementById(`gallery-thumb-${idx}`);
+      if (thumb) thumb.src = val;
+      saveAndRefreshPreview();
+    }
+
+    function collectFormData() {
+      if (!workingData) return;
+      workingData.categoryLabel = document.getElementById("f-categoryLabel").value;
+      workingData.badgeText = document.getElementById("f-badgeText").value;
+      workingData.title = document.getElementById("f-title").value;
+      workingData.subtitle = document.getElementById("f-subtitle").value;
+      workingData.quote = document.getElementById("f-quote").value;
+      workingData.hostsLeft = document.getElementById("f-hostsLeft").value.split(",").map(s => s.trim()).filter(Boolean);
+      workingData.hostsRight = document.getElementById("f-hostsRight").value.split(",").map(s => s.trim()).filter(Boolean);
+      workingData.theme.primary = document.getElementById("f-colorPrimary").value;
+      workingData.theme.secondary = document.getElementById("f-colorSecondary").value;
+      workingData.theme.melodyType = document.getElementById("f-melody").value;
+      workingData.heroImage = document.getElementById("f-heroImage").value;
+      document.getElementById("preview-thumb-hero").src = workingData.heroImage;
+
+      workingData.date = document.getElementById("f-date").value;
+      workingData.dateText = document.getElementById("f-dateText").value;
+      workingData.ceremony.name = document.getElementById("f-ceremonyName").value;
+      workingData.ceremony.time = document.getElementById("f-ceremonyTime").value;
+      workingData.ceremony.address = document.getElementById("f-ceremonyAddress").value;
+      workingData.ceremony.mapUrl = document.getElementById("f-ceremonyMap").value;
+
+      workingData.reception.name = document.getElementById("f-receptionName").value;
+      workingData.reception.time = document.getElementById("f-receptionTime").value;
+      workingData.reception.address = document.getElementById("f-receptionAddress").value;
+      workingData.reception.mapUrl = document.getElementById("f-receptionMap").value;
+
+      workingData.dressCode.title = document.getElementById("f-dressTitle").value;
+      workingData.dressCode.description = document.getElementById("f-dressDesc").value;
+
+      workingData.gifts.bank.bankName = document.getElementById("f-bankName").value;
+      workingData.gifts.bank.beneficiary = document.getElementById("f-bankBeneficiary").value;
+      workingData.gifts.bank.clabe = document.getElementById("f-bankClabe").value;
+      workingData.gifts.bank.concept = document.getElementById("f-bankConcept").value;
+
+      workingData.rsvpWhatsapp = document.getElementById("f-rsvpWhatsapp").value;
+      workingData.rsvpDeadline = document.getElementById("f-rsvpDeadline").value;
+
+      // Si hay un cliente activo en el CRM, auto-guardar también en su orden
+      if (activeClientId) {
+        const ord = window.getClientOrderById(activeClientId);
+        if (ord) {
+          ord.eventTitle = workingData.title;
+          ord.invitationData = JSON.parse(JSON.stringify(workingData));
+          ord.vipGuestsRaw = document.getElementById("vip-guest-list-input").value;
+          window.upsertClientOrder(ord);
+        }
+      }
+    }
+
+    function saveCurrentClientProject() {
+      collectFormData();
+      if (activeClientId) {
+        alert("¡Los cambios y la lista de invitados VIP se han guardado en la ficha del cliente dentro de tu CRM!");
+      }
+    }
+
+    function saveAndRefreshPreview() {
+      collectFormData();
+      localStorage.setItem("aura_custom_invitation", JSON.stringify(workingData));
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        saveToLocalStorageAndReloadIframe();
+        generateVipLinksTable();
+      }, 350);
+    }
+
+    function saveToLocalStorageAndReloadIframe() {
+      collectFormData();
+      localStorage.setItem("aura_custom_invitation", JSON.stringify(workingData));
+      const iframe = document.getElementById("live-preview-iframe");
+      const clientParam = activeClientId ? `&cliente=${activeClientId}` : "";
+      iframe.src = `invitacion.html?demo=custom${clientParam}&formato=${previewFormat}&modo=invitado&t=${Date.now()}`;
+      document.getElementById("open-fullscreen-btn").href = `invitacion.html?demo=custom${clientParam}&formato=${previewFormat}`;
+    }
+
+    function setPreviewFormat(fmt) {
+      previewFormat = fmt;
+      ["web", "video", "pdf"].forEach(k => {
+        const btn = document.getElementById("prev-btn-" + k);
+        btn.className = k === fmt
+          ? "px-2.5 py-1 rounded-lg bg-amber-600 text-white font-semibold"
+          : "px-2.5 py-1 rounded-lg text-stone-300 hover:text-white font-semibold";
+      });
+      saveToLocalStorageAndReloadIframe();
+    }
+
+    function switchEditorTab(tabNum) {
+      for (let i = 1; i <= 5; i++) {
+        document.getElementById("editor-tab-" + i).classList.toggle("hidden", i !== tabNum);
+        const btn = document.getElementById("tab-btn-" + i);
+        if (i === tabNum) {
+          btn.className = "py-3.5 px-2 border-b-2 border-amber-700 text-amber-800 bg-white font-bold";
+        } else {
+          btn.className = "py-3.5 px-2 border-b-2 border-transparent hover:text-stone-900 text-stone-600";
+        }
+      }
+    }
+
+    function generateVipLinksTable() {
+      const raw = document.getElementById("vip-guest-list-input").value;
+      const lines = raw.split("\n").map(l => l.trim()).filter(Boolean);
+      const tbody = document.getElementById("vip-links-tbody");
+
+      const baseUrl = new URL("invitacion.html", window.location.href).href;
+      const shareToken = workingData ? window.encodeInvitationShareData(workingData) : "";
+      const clientParam = activeClientId ? `&cliente=${activeClientId}` : "";
+
+      tbody.innerHTML = lines.map(line => {
+        const parts = line.split(",");
+        const familyName = (parts[0] || "Familia Invitada").trim();
+        const passes = parseInt(parts[1] || "2", 10) || 2;
+        const guestUrl = `${baseUrl}?demo=custom${clientParam}&formato=web&modo=invitado&invitado=${encodeURIComponent(familyName)}&pases=${passes}${shareToken ? '&s=' + shareToken : ''}`;
+
+        const waMessage = [
+          `¡Hola *${familyName}*! ✨`,
+          `Con mucha alegría queremos compartirles la invitación digital para *${workingData ? workingData.categoryLabel : "nuestro evento"}* de *${workingData ? workingData.title : ""}*.`,
+          ``,
+          `🎟️ *Pases reservados para ustedes:* ${passes} ${passes === 1 ? "lugar" : "lugares"}`,
+          `👉 *Abran su invitación interactiva aquí:*`,
+          guestUrl
+        ].join("\n");
+
+        const waShareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(waMessage)}`;
+
+        return `
+          <tr class="hover:bg-stone-50">
+            <td class="py-2.5 px-3 font-semibold text-stone-900">${familyName}</td>
+            <td class="py-2.5 px-2 text-center">
+              <span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 font-bold">${passes}</span>
+            </td>
+            <td class="py-2.5 px-3 text-right space-x-1">
+              <a href="${guestUrl}" target="_blank" class="inline-block px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 font-semibold" title="Ver cómo la verá este invitado">
+                <i class="fa-solid fa-eye"></i> Ver
+              </a>
+              <button onclick="navigator.clipboard.writeText('${guestUrl}'); alert('Link copiado para: ${familyName.replace(/'/g, "")}')" class="px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 font-semibold" title="Copiar Link">
+                <i class="fa-regular fa-copy"></i> Link
+              </button>
+              <a href="${waShareUrl}" target="_blank" class="inline-block px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold" title="Enviar por WhatsApp">
+                <i class="fa-brands fa-whatsapp"></i> Enviar
+              </a>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function saveAsCatalogPreset() {
+      collectFormData();
+      const allPresets = window.getEventPresets();
+      const key = document.getElementById("preset-selector").value || workingData.id || "boda";
+      workingData.id = key;
+      allPresets[key] = JSON.parse(JSON.stringify(workingData));
+      window.saveEventPresets(allPresets);
+      alert(`¡Listo! La plantilla "${workingData.categoryLabel}" se ha actualizado en tu catálogo.`);
+    }
+
+    function exportJsonConfig() {
+      collectFormData();
+      const blob = new Blob([JSON.stringify(workingData, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `invitacion-${(workingData.title || "evento").toLowerCase().replace(/[^a-z0-9]+/g, "-")}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    document.addEventListener("DOMContentLoaded", initGenerator);
+  </script>
+</body>
+</html>

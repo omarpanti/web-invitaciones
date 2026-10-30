@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Invitación Digital | Aura Digital</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="bg-stone-100 text-stone-800 antialiased selection:bg-amber-200">
+
+  <!-- Barra de Control Demo (Se oculta al imprimir PDF o cuando se envía con ?modo=invitado) -->
+  <div id="demo-toolbar" class="no-print sticky top-0 z-50 bg-stone-900 text-white px-3 sm:px-6 py-2.5 border-b border-stone-700 flex flex-wrap items-center justify-between gap-2 text-xs">
+    <div class="flex items-center gap-3">
+      <a href="index.html" class="inline-flex items-center gap-1.5 text-stone-300 hover:text-white font-semibold">
+        <i class="fa-solid fa-arrow-left"></i> Catálogo
+      </a>
+      <span class="text-stone-600">|</span>
+      <select id="toolbar-event-select" onchange="changeEventDemo(this.value)" class="bg-stone-800 text-amber-300 font-semibold rounded-lg px-2.5 py-1 border border-stone-700 focus:outline-none">
+        <!-- Se llena dinámicamente desde getEventPresets() -->
+      </select>
+    </div>
+
+    <!-- Selector de los 3 Formatos -->
+    <div class="flex items-center bg-stone-800 p-1 rounded-xl border border-stone-700">
+      <button onclick="switchFormatView('web')" id="btn-format-web" class="px-3 py-1 rounded-lg font-semibold transition">
+        <i class="fa-solid fa-globe mr-1"></i> 1. Web Interactiva
+      </button>
+      <button onclick="switchFormatView('video')" id="btn-format-video" class="px-3 py-1 rounded-lg font-semibold transition">
+        <i class="fa-solid fa-film mr-1"></i> 2. Video Animado
+      </button>
+      <button onclick="switchFormatView('pdf')" id="btn-format-pdf" class="px-3 py-1 rounded-lg font-semibold transition">
+        <i class="fa-solid fa-file-pdf mr-1"></i> 3. PDF Interactivo
+      </button>
+    </div>
+
+    <div class="hidden lg:flex items-center gap-2">
+      <a href="generador.html" id="edit-in-generator-link" class="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-semibold transition">
+        <i class="fa-solid fa-pen-to-square mr-1"></i> Editar en Generador
+      </a>
+    </div>
+  </div>
+
+  <!-- Sobre de Apertura Animado (Exclusivo para Formato Web Interactiva) -->
+  <div id="envelope-screen" class="envelope-overlay fixed inset-0 z-40 flex items-center justify-center p-4 bg-stone-950/95 backdrop-blur-md">
+    <div class="max-w-md w-full bg-[#FDFBF7] rounded-3xl p-8 sm:p-10 text-center shadow-2xl border border-amber-300/60 relative overflow-hidden">
+      <div class="text-xs uppercase tracking-[0.28em] font-bold mb-2" id="env-category" style="color: var(--theme-primary);">
+        Nuestra Boda
+      </div>
+      <h1 class="font-script text-4xl sm:text-5xl text-stone-900 py-2" id="env-title">
+        Valentina & Sebastián
+      </h1>
+
+      <!-- Tarjeta de Invitado VIP en el sobre -->
+      <div class="my-6 py-4 px-5 rounded-2xl bg-stone-100/90 border border-stone-200/80">
+        <p class="text-[10px] uppercase tracking-widest text-stone-500 font-bold">Invitación Especial Para</p>
+        <p class="font-serif-luxury text-2xl font-bold text-stone-900 mt-0.5" id="env-guest-name">Familia Gómez Pérez</p>
+        <p class="text-xs font-semibold mt-1" id="env-guest-passes" style="color: var(--theme-primary);">
+          <i class="fa-solid fa-ticket mr-1"></i> Pases Reservados: 4 Adultos
+        </p>
+      </div>
+
+      <!-- Botón Sello de Cera -->
+      <button onclick="openEnvelope()" class="wax-seal-btn w-24 h-24 rounded-full mx-auto flex flex-col items-center justify-center text-white shadow-xl cursor-pointer border-4 border-amber-200/50" style="background: radial-gradient(circle, var(--theme-primary), var(--theme-dark));">
+        <i class="fa-solid fa-envelope-open-text text-2xl mb-1"></i>
+        <span class="text-[9px] uppercase tracking-widest font-bold">Abrir</span>
+      </button>
+
+      <p class="text-xs text-stone-500 mt-5">
+        <i class="fa-solid fa-volume-high mr-1"></i> Toca el sello para abrir con música
+      </p>
+    </div>
+  </div>
+
+  <!-- Botón Flotante de Música -->
+  <button id="floating-music-btn" onclick="toggleMusic()" class="no-print fixed bottom-6 right-6 z-30 w-13 h-13 p-3.5 rounded-full shadow-xl text-white flex items-center justify-center gap-1.5 transition hover:scale-105" style="background-color: var(--theme-primary);" title="Activar / Pausar Música">
+    <i id="music-icon" class="fa-solid fa-volume-xmark text-lg"></i>
+  </button>
+
+  <!-- =================================================================== -->
+  <!-- VISTA 1: INVITACIÓN WEB INTERACTIVA COMPLETA                        -->
+  <!-- =================================================================== -->
+  <main id="view-web" class="hidden">
+    <!-- Portada Hero -->
+    <section class="relative min-h-[88vh] flex items-center justify-center text-center text-white overflow-hidden">
+      <img id="web-hero-img" src="" alt="Portada del Evento" class="absolute inset-0 w-full h-full object-cover scale-105 transition duration-1000" />
+      <div class="absolute inset-0 bg-gradient-to-b from-black/55 via-black/45 to-black/80"></div>
+
+      <div class="relative z-10 max-w-3xl mx-auto px-4 py-16 space-y-5">
+        <span id="web-badge" class="inline-block px-4 py-1.5 rounded-full bg-white/15 backdrop-blur-md border border-white/30 text-xs uppercase tracking-[0.25em] font-semibold">
+          Nuestra Boda
+        </span>
+        <h1 id="web-title" class="font-script text-6xl sm:text-8xl leading-tight drop-shadow-md">
+          Valentina & Sebastián
+        </h1>
+        <p id="web-subtitle" class="text-base sm:text-xl text-stone-200 max-w-xl mx-auto font-light">
+          ¡Nos casamos!
+        </p>
+        <div class="pt-4">
+          <span id="web-date-text" class="inline-block font-serif-luxury text-2xl sm:text-3xl tracking-wider border-y border-white/40 py-2 px-6">
+            Sábado 20 de Febrero de 2027
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Frase y Bendición de Padres / Padrinos -->
+    <section class="py-16 px-4 text-center" style="background-color: var(--theme-secondary);">
+      <div class="max-w-3xl mx-auto space-y-10">
+        <blockquote id="web-quote" class="font-serif-luxury italic text-2xl sm:text-3xl text-stone-700 leading-relaxed">
+          «El amor no consiste en mirarse el uno al otro...»
+        </blockquote>
+
+        <div class="w-20 h-0.5 mx-auto opacity-40" style="background-color: var(--theme-primary);"></div>
+
+        <div>
+          <p id="web-hosts-title" class="text-xs uppercase tracking-[0.25em] font-bold text-stone-500 mb-6">
+            Con la bendición de nuestros padres
+          </p>
+          <div class="grid sm:grid-cols-2 gap-8">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-200/70">
+              <h3 id="web-hosts-left-title" class="font-serif-luxury text-xl font-bold mb-2" style="color: var(--theme-primary);">Padres de la Novia</h3>
+              <div id="web-hosts-left-list" class="text-sm text-stone-700 space-y-1"></div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-200/70">
+              <h3 id="web-hosts-right-title" class="font-serif-luxury text-xl font-bold mb-2" style="color: var(--theme-primary);">Padres del Novio</h3>
+              <div id="web-hosts-right-list" class="text-sm text-stone-700 space-y-1"></div>
+            </div>
+          </div>
+
+          <div class="mt-6 bg-white p-5 rounded-2xl shadow-sm border border-stone-200/70 max-w-md mx-auto">
+            <h4 id="web-godparents-title" class="font-serif-luxury text-lg font-bold mb-1" style="color: var(--theme-primary);">Padrinos</h4>
+            <div id="web-godparents-list" class="text-sm text-stone-700"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cuenta Regresiva en Vivo -->
+    <section class="py-14 px-4 text-white text-center" style="background-color: var(--theme-dark);">
+      <div class="max-w-3xl mx-auto">
+        <span class="text-xs uppercase tracking-[0.25em] text-amber-300 font-semibold">Falta muy poco</span>
+        <h2 class="font-serif-luxury text-3xl sm:text-4xl font-bold mt-1 mb-8">Cuenta Regresiva para el Gran Día</h2>
+
+        <div class="grid grid-cols-4 gap-3 sm:gap-6 max-w-xl mx-auto">
+          <div class="bg-white/10 backdrop-blur border border-white/15 rounded-2xl py-4 px-2">
+            <span id="cd-days" class="font-serif-luxury text-3xl sm:text-5xl font-bold block">00</span>
+            <span class="text-[10px] sm:text-xs uppercase tracking-widest text-stone-300">Días</span>
+          </div>
+          <div class="bg-white/10 backdrop-blur border border-white/15 rounded-2xl py-4 px-2">
+            <span id="cd-hours" class="font-serif-luxury text-3xl sm:text-5xl font-bold block">00</span>
+            <span class="text-[10px] sm:text-xs uppercase tracking-widest text-stone-300">Horas</span>
+          </div>
+          <div class="bg-white/10 backdrop-blur border border-white/15 rounded-2xl py-4 px-2">
+            <span id="cd-minutes" class="font-serif-luxury text-3xl sm:text-5xl font-bold block">00</span>
+            <span class="text-[10px] sm:text-xs uppercase tracking-widest text-stone-300">Minutos</span>
+          </div>
+          <div class="bg-white/10 backdrop-blur border border-white/15 rounded-2xl py-4 px-2">
+            <span id="cd-seconds" class="font-serif-luxury text-3xl sm:text-5xl font-bold block">00</span>
+            <span class="text-[10px] sm:text-xs uppercase tracking-widest text-stone-300">Segundos</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dónde y Cuándo (Ceremonia y Recepción con GPS) -->
+    <section class="py-16 px-4 bg-white">
+      <div class="max-w-5xl mx-auto">
+        <div class="text-center mb-12">
+          <span class="text-xs uppercase tracking-[0.25em] font-bold" style="color: var(--theme-primary);">Ubicaciones y Horarios</span>
+          <h2 class="font-serif-luxury text-4xl font-bold text-stone-900 mt-1">Dónde & Cuándo</h2>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8">
+          <!-- Ceremonia -->
+          <div class="rounded-3xl bg-[#FAF8F5] border border-stone-200 p-8 text-center flex flex-col justify-between shadow-sm">
+            <div>
+              <div class="w-14 h-14 rounded-2xl mx-auto flex items-center justify-center text-white text-2xl mb-4 shadow" style="background-color: var(--theme-primary);">
+                <i class="fa-solid fa-church"></i>
+              </div>
+              <span class="text-xs font-bold uppercase tracking-widest text-stone-400">Ceremonia</span>
+              <h3 id="web-ceremony-name" class="font-serif-luxury text-2xl sm:text-3xl font-bold text-stone-900 mt-1">Parroquia</h3>
+              <p id="web-ceremony-time" class="text-sm font-bold mt-2" style="color: var(--theme-primary);">17:00 HRS</p>
+              <p id="web-ceremony-address" class="text-sm text-stone-600 mt-2 leading-relaxed"></p>
+            </div>
+            <a id="web-ceremony-map" href="#" target="_blank" class="mt-6 py-3 px-6 rounded-xl text-white font-semibold text-xs sm:text-sm inline-flex items-center justify-center gap-2 shadow transition hover:opacity-90" style="background-color: var(--theme-primary);">
+              <i class="fa-solid fa-location-dot"></i> Ver Ubicación en Google Maps
+            </a>
+          </div>
+
+          <!-- Recepción -->
+          <div class="rounded-3xl bg-[#FAF8F5] border border-stone-200 p-8 text-center flex flex-col justify-between shadow-sm">
+            <div>
+              <div class="w-14 h-14 rounded-2xl mx-auto flex items-center justify-center text-white text-2xl mb-4 shadow" style="background-color: var(--theme-primary);">
+                <i class="fa-solid fa-champagne-glasses"></i>
+              </div>
+              <span class="text-xs font-bold uppercase tracking-widest text-stone-400">Recepción & Fiesta</span>
+              <h3 id="web-reception-name" class="font-serif-luxury text-2xl sm:text-3xl font-bold text-stone-900 mt-1">Hacienda</h3>
+              <p id="web-reception-time" class="text-sm font-bold mt-2" style="color: var(--theme-primary);">19:30 HRS</p>
+              <p id="web-reception-address" class="text-sm text-stone-600 mt-2 leading-relaxed"></p>
+            </div>
+            <a id="web-reception-map" href="#" target="_blank" class="mt-6 py-3 px-6 rounded-xl text-white font-semibold text-xs sm:text-sm inline-flex items-center justify-center gap-2 shadow transition hover:opacity-90" style="background-color: var(--theme-primary);">
+              <i class="fa-solid fa-location-dot"></i> Ver Ubicación en Google Maps
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Itinerario del Evento -->
+    <section class="py-16 px-4" style="background-color: var(--theme-secondary);">
+      <div class="max-w-3xl mx-auto">
+        <div class="text-center mb-12">
+          <span class="text-xs uppercase tracking-[0.25em] font-bold" style="color: var(--theme-primary);">Minuto a Minuto</span>
+          <h2 class="font-serif-luxury text-4xl font-bold text-stone-900 mt-1">Programa del Evento</h2>
+        </div>
+
+        <div id="web-itinerary-list" class="grid sm:grid-cols-2 gap-4">
+          <!-- Se inyecta dinámicamente -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Código de Vestimenta y Galería -->
+    <section class="py-16 px-4 bg-white">
+      <div class="max-w-5xl mx-auto space-y-16">
+        <!-- Dress Code -->
+        <div class="max-w-2xl mx-auto rounded-3xl bg-[#FAF8F5] border border-stone-200 p-8 text-center">
+          <div class="w-12 h-12 rounded-full mx-auto flex items-center justify-center text-white text-lg mb-3" style="background-color: var(--theme-primary);">
+            <i class="fa-solid fa-user-tie"></i>
+          </div>
+          <span class="text-xs uppercase tracking-widest text-stone-400 font-bold">Código de Vestimenta</span>
+          <h3 id="web-dress-title" class="font-serif-luxury text-3xl font-bold text-stone-900 mt-1">Formal</h3>
+          <p id="web-dress-desc" class="text-sm text-stone-600 mt-2"></p>
+          <div class="mt-4 pt-4 border-t border-stone-200/80 text-xs font-medium text-stone-500" id="web-dress-note"></div>
+        </div>
+
+        <!-- Galería -->
+        <div>
+          <div class="text-center mb-8">
+            <span class="text-xs uppercase tracking-[0.25em] font-bold" style="color: var(--theme-primary);">Momentos Especiales</span>
+            <h2 class="font-serif-luxury text-4xl font-bold text-stone-900 mt-1">Galería de Fotos</h2>
+          </div>
+          <div id="web-gallery-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mesa de Regalos y CLABE -->
+    <section class="py-16 px-4" style="background-color: var(--theme-secondary);">
+      <div class="max-w-4xl mx-auto text-center">
+        <div class="w-14 h-14 rounded-2xl mx-auto flex items-center justify-center text-white text-2xl mb-4 shadow" style="background-color: var(--theme-primary);">
+          <i class="fa-solid fa-gift"></i>
+        </div>
+        <h2 class="font-serif-luxury text-4xl font-bold text-stone-900">Mesa de Regalos</h2>
+        <p id="web-gifts-msg" class="text-sm sm:text-base text-stone-600 max-w-xl mx-auto mt-2"></p>
+
+        <div class="grid md:grid-cols-2 gap-6 mt-10 text-left">
+          <!-- Tiendas Departamentales -->
+          <div class="bg-white rounded-3xl p-6 border border-stone-200 shadow-sm space-y-4">
+            <h3 class="font-serif-luxury text-2xl font-bold text-stone-900">Tiendas & Listas Online</h3>
+            <div id="web-gifts-stores" class="space-y-3"></div>
+          </div>
+
+          <!-- Datos Bancarios / Lluvia de Sobres -->
+          <div class="bg-white rounded-3xl p-6 border border-stone-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <h3 id="web-bank-title" class="font-serif-luxury text-2xl font-bold text-stone-900">Lluvia de Sobres / Transferencia</h3>
+              <div class="mt-4 space-y-2 text-sm text-stone-700 bg-stone-50 p-4 rounded-2xl border border-stone-200/70">
+                <p><strong>Banco:</strong> <span id="web-bank-name">BBVA</span></p>
+                <p><strong>Beneficiario:</strong> <span id="web-bank-beneficiary"></span></p>
+                <p><strong>CLABE:</strong> <span id="web-bank-clabe" class="font-mono font-bold text-stone-900"></span></p>
+                <p><strong>Concepto:</strong> <span id="web-bank-concept"></span></p>
+              </div>
+            </div>
+            <button onclick="copyClabe()" id="btn-copy-clabe" class="mt-4 w-full py-3 rounded-xl border border-stone-300 hover:bg-stone-100 text-stone-800 font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition">
+              <i class="fa-regular fa-copy"></i> Copiar CLABE Interbancaria
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pase VIP Personalizado + Confirmación de Asistencia (RSVP) -->
+    <section class="py-16 px-4 bg-stone-900 text-white">
+      <div class="max-w-xl mx-auto">
+        <div class="bg-white text-stone-900 rounded-3xl p-7 sm:p-10 shadow-2xl border-4 border-amber-500/40">
+          <!-- Boleto VIP -->
+          <div class="bg-amber-50/90 border border-amber-300/80 rounded-2xl p-5 text-center mb-6">
+            <span class="text-[10px] uppercase tracking-[0.25em] text-amber-800 font-bold">Pase Digital de Acceso</span>
+            <h3 id="rsvp-guest-name" class="font-serif-luxury text-3xl font-bold text-stone-900 mt-1">Familia Gómez Pérez</h3>
+            <p id="rsvp-guest-passes-badge" class="inline-block mt-2 px-4 py-1 rounded-full text-white text-xs font-bold shadow-sm" style="background-color: var(--theme-primary);">
+              4 Lugares Reservados
+            </p>
+          </div>
+
+          <div class="text-center mb-6">
+            <h2 class="font-serif-luxury text-3xl font-bold">Confirmar Asistencia (RSVP)</h2>
+            <p class="text-xs text-stone-500 mt-1">
+              Favor de confirmar antes del <strong id="rsvp-deadline-text">20 de Enero</strong>
+            </p>
+          </div>
+
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1">Nombre de quien confirma</label>
+              <input type="text" id="rsvp-input-name" class="w-full rounded-xl border border-stone-300 px-3.5 py-2.5 text-sm focus:outline-none" />
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1">¿Podrás acompañarnos?</label>
+                <select id="rsvp-input-attending" class="w-full rounded-xl border border-stone-300 px-3.5 py-2.5 text-sm focus:outline-none">
+                  <option value="¡Sí, ahí estaremos con mucho gusto!">¡Sí, ahí estaremos!</option>
+                  <option value="Lo sentimos, no podremos asistir">No podremos asistir</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1">Personas confirmadas</label>
+                <select id="rsvp-input-count" class="w-full rounded-xl border border-stone-300 px-3.5 py-2.5 text-sm focus:outline-none">
+                  <!-- Se llena según el número de pases asignados -->
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1">Mensaje para los festejados o restricción alimentaria</label>
+              <textarea id="rsvp-input-message" rows="2" placeholder="¡Muchas felicidades! Ahí nos vemos..." class="w-full rounded-xl border border-stone-300 px-3.5 py-2 text-sm focus:outline-none"></textarea>
+            </div>
+
+            <button onclick="sendRsvpToHost()" class="w-full py-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-lg flex items-center justify-center gap-2 transition">
+              <i class="fa-brands fa-whatsapp text-lg"></i> Confirmar Asistencia por WhatsApp
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- =================================================================== -->
+  <!-- VISTA 2: VIDEO-INVITACIÓN ANIMADA (FORMATO REEL / STORY 9:16)       -->
+  <!-- =================================================================== -->
+  <section id="view-video" class="hidden min-h-[calc(100vh-52px)] bg-stone-950 flex flex-col items-center justify-center p-4">
+    <div class="max-w-md w-full text-center mb-3 text-white flex items-center justify-between px-2">
+      <span class="text-xs font-semibold text-amber-300"><i class="fa-solid fa-clapperboard mr-1"></i> Vista Video-Invitación HD (9:16)</span>
+      <div class="flex items-center gap-2">
+        <button onclick="prevVideoSlide()" class="px-2.5 py-1 rounded bg-stone-800 hover:bg-stone-700 text-xs"><i class="fa-solid fa-backward-step"></i></button>
+        <button onclick="toggleVideoAutoplay()" id="video-play-btn" class="px-3 py-1 rounded bg-amber-600 hover:bg-amber-500 text-xs font-bold"><i class="fa-solid fa-pause mr-1"></i> Pausa</button>
+        <button onclick="nextVideoSlide()" class="px-2.5 py-1 rounded bg-stone-800 hover:bg-stone-700 text-xs"><i class="fa-solid fa-forward-step"></i></button>
+      </div>
+    </div>
+
+    <!-- Marco 9:16 -->
+    <div class="relative w-[340px] sm:w-[375px] h-[610px] sm:h-[660px] rounded-[36px] overflow-hidden shadow-2xl border-4 border-stone-800 bg-stone-900 flex flex-col justify-between">
+      <!-- Imagen de fondo dinámica -->
+      <img id="video-bg-img" src="" alt="Fondo Video" class="absolute inset-0 w-full h-full object-cover opacity-55 transition-all duration-700" />
+      <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/85"></div>
+
+      <!-- Barras de progreso tipo Historia -->
+      <div class="relative z-10 p-4">
+        <div class="grid grid-cols-5 gap-1.5 mb-3" id="video-progress-bars">
+          <div class="h-1 bg-white/30 rounded-full overflow-hidden"><div class="h-full bg-amber-400 w-full"></div></div>
+          <div class="h-1 bg-white/30 rounded-full overflow-hidden"><div class="h-full bg-amber-400 w-0"></div></div>
+          <div class="h-1 bg-white/30 rounded-full overflow-hidden"><div class="h-full bg-amber-400 w-0"></div></div>
+          <div class="h-1 bg-white/30 rounded-full overflow-hidden"><div class="h-full bg-amber-400 w-0"></div></div>
+          <div class="h-1 bg-white/30 rounded-full overflow-hidden"><div class="h-full bg-amber-400 w-0"></div></div>
+        </div>
+        <div class="flex items-center justify-between text-white text-xs">
+          <span id="video-header-label" class="font-semibold tracking-wider uppercase text-[10px] text-amber-300">Save the Date</span>
+          <span class="text-[11px] text-stone-300"><i class="fa-solid fa-music mr-1"></i> Audio Activo</span>
+        </div>
+      </div>
+
+      <!-- Contenido de la escena actual -->
+      <div id="video-slide-content" class="relative z-10 px-6 my-auto text-center text-white video-slide-active">
+        <!-- Se actualiza por escena -->
+      </div>
+
+      <!-- Pie del Video -->
+      <div class="relative z-10 p-5 text-center">
+        <button onclick="switchFormatView('web')" class="w-full py-3 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-md text-white text-xs font-bold uppercase tracking-wider border border-white/40 transition">
+          Ver Invitación Web Completa →
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================================================================== -->
+  <!-- VISTA 3: IMAGEN / TARJETA PDF INTERACTIVO (1 PÁGINA VERTICAL)       -->
+  <!-- =================================================================== -->
+  <section id="view-pdf" class="hidden py-10 px-4 bg-stone-200 min-h-[calc(100vh-52px)]">
+    <div class="max-w-lg mx-auto mb-5 flex flex-wrap items-center justify-between gap-3 no-print">
+      <div>
+        <h2 class="font-serif-luxury text-2xl font-bold text-stone-900">Vista Tarjeta / PDF Interactivo</h2>
+        <p class="text-xs text-stone-600">Diseño de 1 sola página con botones clicables a Maps, Regalos y WhatsApp.</p>
+      </div>
+      <button onclick="window.print()" class="px-4 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 text-white text-xs font-bold shadow flex items-center gap-2 transition">
+        <i class="fa-solid fa-download"></i> Descargar / Guardar PDF
+      </button>
+    </div>
+
+    <!-- Contenedor imprimible de 1 página -->
+    <div id="pdf-card-container" class="max-w-lg mx-auto bg-[#FDFBF7] rounded-3xl overflow-hidden shadow-2xl border border-stone-300">
+      <div class="relative h-64">
+        <img id="pdf-hero-img" src="" alt="Portada PDF" class="w-full h-full object-cover" />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex flex-col justify-end p-6 text-center text-white">
+          <span id="pdf-badge" class="text-[10px] uppercase tracking-[0.28em] text-amber-300 font-bold">Nuestra Boda</span>
+          <h1 id="pdf-title" class="font-script text-5xl mt-1">Valentina & Sebastián</h1>
+          <p id="pdf-date" class="font-serif-luxury text-xl text-amber-100 mt-1">Sábado 20 de Febrero de 2027</p>
+        </div>
+      </div>
+
+      <div class="p-7 text-center space-y-5">
+        <p id="pdf-quote" class="font-serif-luxury italic text-lg text-stone-700"></p>
+
+        <div class="bg-white rounded-2xl p-4 border border-stone-200 text-xs text-stone-700 space-y-1">
+          <p class="font-bold uppercase tracking-widest text-[10px] text-amber-800" id="pdf-guest-line">Pase Especial: Familia Gómez Pérez (4 Lugares)</p>
+        </div>
+
+        <!-- Botones Interactivos Clicables dentro del PDF -->
+        <div class="grid sm:grid-cols-2 gap-3 text-left">
+          <div class="bg-white p-4 rounded-2xl border border-stone-200 flex flex-col justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase text-stone-400">Ceremonia • <span id="pdf-ceremony-time">17:00</span></span>
+              <h3 id="pdf-ceremony-name" class="font-serif-luxury text-lg font-bold text-stone-900 leading-snug mt-0.5">Parroquia</h3>
+              <p id="pdf-ceremony-address" class="text-[11px] text-stone-500 mt-1"></p>
+            </div>
+            <a id="pdf-ceremony-link" href="#" target="_blank" class="mt-3 py-2 px-3 rounded-lg bg-stone-900 text-white text-[11px] font-semibold text-center block">
+              <i class="fa-solid fa-location-dot text-amber-400 mr-1"></i> Abrir Mapa GPS
+            </a>
+          </div>
+
+          <div class="bg-white p-4 rounded-2xl border border-stone-200 flex flex-col justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase text-stone-400">Recepción • <span id="pdf-reception-time">19:30</span></span>
+              <h3 id="pdf-reception-name" class="font-serif-luxury text-lg font-bold text-stone-900 leading-snug mt-0.5">Hacienda</h3>
+              <p id="pdf-reception-address" class="text-[11px] text-stone-500 mt-1"></p>
+            </div>
+            <a id="pdf-reception-link" href="#" target="_blank" class="mt-3 py-2 px-3 rounded-lg bg-stone-900 text-white text-[11px] font-semibold text-center block">
+              <i class="fa-solid fa-location-dot text-amber-400 mr-1"></i> Abrir Mapa GPS
+            </a>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl border border-stone-200 text-xs text-stone-700 flex items-center justify-between">
+          <div class="text-left">
+            <span class="font-bold text-stone-900 block" id="pdf-dress-code">Código de Vestimenta: Formal</span>
+            <span class="text-[11px] text-stone-500" id="pdf-bank-info">Mesa de Regalos y Lluvia de Sobres</span>
+          </div>
+          <i class="fa-solid fa-gift text-xl text-amber-700"></i>
+        </div>
+
+        <!-- Botón Clicable de Confirmación en el PDF -->
+        <a id="pdf-rsvp-btn" href="#" target="_blank" class="w-full py-3.5 rounded-xl bg-emerald-600 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow">
+          <i class="fa-brands fa-whatsapp text-base"></i> Clic aquí para Confirmar Asistencia por WhatsApp
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <script src="js/data.js"></script>
+  <script>
+    const musicPlayer = new window.AmbientMusicPlayer();
+    let currentInvitation = null;
+    let currentFormat = "web";
+    let guestName = "Familia Invitada";
+    let guestPasses = 4;
+    let countdownTimer = null;
+
+    // Variables para el reproductor de Video-Invitación
+    let videoSlideIndex = 0;
+    let videoInterval = null;
+    let videoPlaying = true;
+
+    function loadInvitationParameters() {
+      const params = new URLSearchParams(window.location.search);
+      const demoKey = params.get("demo") || "boda";
+      currentFormat = params.get("formato") || "web";
+      guestName = params.get("invitado") || "Familia Gómez Pérez";
+      guestPasses = parseInt(params.get("pases") || "4", 10);
+      const isGuestMode = params.get("modo") === "invitado";
+
+      const cfg = window.getBusinessConfig();
+      const vis = cfg.clientVisibility;
+      const isAdminView = window.hasEffectiveAdminView();
+      const canSeeGenerator = isAdminView || Boolean(vis.allowClientGenerator);
+
+      if (window.self === window.top) {
+        window.renderAdminFloatingBar();
+      }
+
+      if (isGuestMode || (!isAdminView && vis.showFormatSwitcherInDemo === false)) {
+        document.getElementById("demo-toolbar").classList.add("hidden");
+      }
+
+      if (!canSeeGenerator) {
+        document.getElementById("edit-in-generator-link").classList.add("hidden");
+      }
+
+      if (!isAdminView) {
+        if (vis.formatWebVisible === false) document.getElementById("btn-format-web").classList.add("hidden");
+        if (vis.formatVideoVisible === false) document.getElementById("btn-format-video").classList.add("hidden");
+        if (vis.formatPdfVisible === false) document.getElementById("btn-format-pdf").classList.add("hidden");
+      }
+
+      const allPresets = window.getEventPresets();
+      const enabledKeys = Object.keys(allPresets).filter(k => isAdminView || allPresets[k].enabled !== false);
+      const selectEl = document.getElementById("toolbar-event-select");
+      selectEl.innerHTML = enabledKeys.map(k => `<option value="${k}">Demo: ${allPresets[k].categoryLabel}</option>`).join("") + (canSeeGenerator ? `<option value="custom">Personalizada (Del Generador)</option>` : ``);
+
+      const clientId = params.get("cliente");
+      const shareToken = params.get("s");
+
+      // 1. Si viene de un cliente registrado en el CRM (?cliente=...)
+      if (clientId) {
+        const ord = window.getClientOrderById(clientId);
+        if (ord) {
+          if (ord.invitationData) {
+            currentInvitation = ord.invitationData;
+          } else {
+            const base = JSON.parse(JSON.stringify(allPresets[ord.presetBase] || allPresets.boda));
+            base.title = ord.eventTitle || base.title;
+            currentInvitation = base;
+          }
+        }
+      }
+
+      // 2. Si viene con datos compartidos en la URL (?s=...) para otros dispositivos
+      if (!currentInvitation && shareToken) {
+        const decoded = window.decodeInvitationShareData(shareToken);
+        if (decoded) {
+          currentInvitation = decoded;
+        }
+      }
+
+      // 3. Cargar desde localStorage si viene del generador (demo=custom) o cargar preset del catálogo
+      if (!currentInvitation) {
+        if (demoKey === "custom") {
+          const saved = localStorage.getItem("aura_custom_invitation");
+          if (saved) {
+            try {
+              currentInvitation = JSON.parse(saved);
+            } catch (e) {
+              currentInvitation = allPresets.boda;
+            }
+          } else {
+            currentInvitation = allPresets.boda;
+          }
+        } else {
+          currentInvitation = allPresets[demoKey] || allPresets.boda;
+        }
+      }
+
+      selectEl.value = demoKey in allPresets ? demoKey : "custom";
+      document.getElementById("edit-in-generator-link").href = `generador.html?plantilla=${currentInvitation.id || "boda"}`;
+
+      applyInvitationData(currentInvitation);
+      switchFormatView(currentFormat);
+    }
+
+    function applyInvitationData(inv) {
+      document.title = `${inv.title} | ${inv.categoryLabel}`;
+
+      // Aplicar variables de color del tema
+      const root = document.documentElement;
+      root.style.setProperty("--theme-primary", inv.theme.primary);
+      root.style.setProperty("--theme-secondary", inv.theme.secondary);
+      root.style.setProperty("--theme-accent", inv.theme.accent);
+      root.style.setProperty("--theme-dark", inv.theme.dark);
+
+      musicPlayer.setMelody(inv.theme.melodyType || "romantic");
+
+      // 1. Datos del Sobre
+      document.getElementById("env-category").textContent = inv.categoryLabel;
+      document.getElementById("env-title").textContent = inv.title;
+      document.getElementById("env-guest-name").textContent = guestName;
+      document.getElementById("env-guest-passes").innerHTML = `<i class="fa-solid fa-ticket mr-1"></i> Pase válido por ${guestPasses} ${guestPasses === 1 ? "lugar" : "lugares"}`;
+
+      // 2. Datos de la Web Interactiva
+      document.getElementById("web-hero-img").src = inv.heroImage;
+      document.getElementById("web-badge").textContent = inv.badgeText;
+      document.getElementById("web-title").textContent = inv.title;
+      document.getElementById("web-subtitle").textContent = inv.subtitle;
+      document.getElementById("web-date-text").textContent = inv.dateText;
+      document.getElementById("web-quote").textContent = inv.quote;
+
+      document.getElementById("web-hosts-title").textContent = inv.hostsTitle;
+      document.getElementById("web-hosts-left-title").textContent = inv.hostsLeftTitle;
+      document.getElementById("web-hosts-left-list").innerHTML = (inv.hostsLeft || []).map(p => `<p>${p}</p>`).join("");
+      document.getElementById("web-hosts-right-title").textContent = inv.hostsRightTitle;
+      document.getElementById("web-hosts-right-list").innerHTML = (inv.hostsRight || []).map(p => `<p>${p}</p>`).join("");
+      document.getElementById("web-godparents-title").textContent = inv.godparentsTitle;
+      document.getElementById("web-godparents-list").innerHTML = (inv.godparents || []).map(p => `<p>${p}</p>`).join("");
+
+      document.getElementById("web-ceremony-name").textContent = inv.ceremony.name;
+      document.getElementById("web-ceremony-time").textContent = inv.ceremony.time;
+      document.getElementById("web-ceremony-address").textContent = inv.ceremony.address;
+      document.getElementById("web-ceremony-map").href = inv.ceremony.mapUrl;
+
+      document.getElementById("web-reception-name").textContent = inv.reception.name;
+      document.getElementById("web-reception-time").textContent = inv.reception.time;
+      document.getElementById("web-reception-address").textContent = inv.reception.address;
+      document.getElementById("web-reception-map").href = inv.reception.mapUrl;
+
+      // Itinerario
+      document.getElementById("web-itinerary-list").innerHTML = (inv.itinerary || []).map(item => `
+        <div class="bg-white p-5 rounded-2xl border border-stone-200/80 shadow-sm flex items-start gap-4">
+          <div class="w-11 h-11 rounded-xl flex items-center justify-center text-white shrink-0" style="background-color: var(--theme-primary);">
+            <i class="fa-solid ${item.icon || 'fa-star'}"></i>
+          </div>
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider" style="color: var(--theme-primary);">${item.time}</span>
+            <h4 class="font-serif-luxury text-xl font-bold text-stone-900">${item.title}</h4>
+            <p class="text-xs text-stone-500 mt-0.5">${item.desc}</p>
+          </div>
+        </div>
+      `).join("");
+
+      // Dress code y Galería
+      document.getElementById("web-dress-title").textContent = inv.dressCode.title;
+      document.getElementById("web-dress-desc").textContent = inv.dressCode.description;
+      document.getElementById("web-dress-note").textContent = inv.dressCode.note;
+
+      document.getElementById("web-gallery-grid").innerHTML = (inv.gallery || []).map(imgUrl => `
+        <div class="h-52 sm:h-64 rounded-2xl overflow-hidden shadow-sm border border-stone-200">
+          <img src="${imgUrl}" alt="Foto Galería" class="w-full h-full object-cover hover:scale-105 transition duration-500" />
+        </div>
+      `).join("");
+
+      // Mesa de Regalos
+      document.getElementById("web-gifts-msg").textContent = inv.gifts.message;
+      document.getElementById("web-gifts-stores").innerHTML = (inv.gifts.stores || []).map(st => `
+        <a href="${st.url}" target="_blank" class="flex items-center justify-between p-3.5 rounded-2xl bg-stone-50 hover:bg-amber-50/60 border border-stone-200 transition">
+          <div>
+            <p class="font-bold text-sm text-stone-900">${st.name}</p>
+            <p class="text-xs text-stone-500">${st.code}</p>
+          </div>
+          <span class="text-xs font-semibold text-amber-800">Abrir <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i></span>
+        </a>
+      `).join("");
+
+      document.getElementById("web-bank-title").textContent = inv.gifts.bank.title;
+      document.getElementById("web-bank-name").textContent = inv.gifts.bank.bankName;
+      document.getElementById("web-bank-beneficiary").textContent = inv.gifts.bank.beneficiary;
+      document.getElementById("web-bank-clabe").textContent = inv.gifts.bank.clabe;
+      document.getElementById("web-bank-concept").textContent = inv.gifts.bank.concept;
+
+      // RSVP & Pase VIP
+      document.getElementById("rsvp-guest-name").textContent = guestName;
+      document.getElementById("rsvp-guest-passes-badge").textContent = `${guestPasses} ${guestPasses === 1 ? "Lugar Reservado" : "Lugares Reservados"}`;
+      document.getElementById("rsvp-deadline-text").textContent = inv.rsvpDeadline;
+      document.getElementById("rsvp-input-name").value = guestName;
+
+      const countSelect = document.getElementById("rsvp-input-count");
+      countSelect.innerHTML = "";
+      for (let i = guestPasses; i >= 1; i--) {
+        const opt = document.createElement("option");
+        opt.value = i;
+        opt.textContent = `${i} ${i === 1 ? "persona" : "personas"} (de ${guestPasses} asignadas)`;
+        countSelect.appendChild(opt);
+      }
+
+      // 3. Datos de la Tarjeta PDF Interactivo
+      document.getElementById("pdf-hero-img").src = inv.heroImage;
+      document.getElementById("pdf-badge").textContent = inv.badgeText;
+      document.getElementById("pdf-title").textContent = inv.title;
+      document.getElementById("pdf-date").textContent = inv.dateText;
+      document.getElementById("pdf-quote").textContent = inv.quote;
+      document.getElementById("pdf-guest-line").textContent = `Pase Especial: ${guestName} (${guestPasses} ${guestPasses === 1 ? "Lugar" : "Lugares"})`;
+      document.getElementById("pdf-ceremony-time").textContent = inv.ceremony.time;
+      document.getElementById("pdf-ceremony-name").textContent = inv.ceremony.name;
+      document.getElementById("pdf-ceremony-address").textContent = inv.ceremony.address;
+      document.getElementById("pdf-ceremony-link").href = inv.ceremony.mapUrl;
+      document.getElementById("pdf-reception-time").textContent = inv.reception.time;
+      document.getElementById("pdf-reception-name").textContent = inv.reception.name;
+      document.getElementById("pdf-reception-address").textContent = inv.reception.address;
+      document.getElementById("pdf-reception-link").href = inv.reception.mapUrl;
+      document.getElementById("pdf-dress-code").textContent = `Código de Vestimenta: ${inv.dressCode.title}`;
+      document.getElementById("pdf-bank-info").textContent = `CLABE Regalos: ${inv.gifts.bank.clabe} (${inv.gifts.bank.bankName})`;
+
+      const pdfWaMsg = `¡Hola! Soy *${guestName}* y confirmo nuestra asistencia (${guestPasses} lugares) para *${inv.categoryLabel} de ${inv.title}*. 🎉`;
+      document.getElementById("pdf-rsvp-btn").href = `https://wa.me/${inv.rsvpWhatsapp}?text=${encodeURIComponent(pdfWaMsg)}`;
+
+      // Iniciar Cuenta Regresiva
+      startCountdown(inv.date);
+    }
+
+    function startCountdown(dateString) {
+      if (countdownTimer) clearInterval(countdownTimer);
+      const target = new Date(dateString).getTime();
+
+      const update = () => {
+        const now = Date.now();
+        const diff = Math.max(0, target - now);
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const mins = Math.floor((diff / (1000 * 60)) % 60);
+        const secs = Math.floor((diff / 1000) % 60);
+
+        document.getElementById("cd-days").textContent = String(days).padStart(2, "0");
+        document.getElementById("cd-hours").textContent = String(hours).padStart(2, "0");
+        document.getElementById("cd-minutes").textContent = String(mins).padStart(2, "0");
+        document.getElementById("cd-seconds").textContent = String(secs).padStart(2, "0");
+      };
+
+      update();
+      countdownTimer = setInterval(update, 1000);
+    }
+
+    function openEnvelope() {
+      document.getElementById("envelope-screen").classList.add("opened");
+      musicPlayer.start();
+      updateMusicIcon(true);
+    }
+
+    function toggleMusic() {
+      const playing = musicPlayer.toggle();
+      updateMusicIcon(playing);
+    }
+
+    function updateMusicIcon(playing) {
+      const icon = document.getElementById("music-icon");
+      icon.className = playing ? "fa-solid fa-volume-high text-lg" : "fa-solid fa-volume-xmark text-lg";
+    }
+
+    function copyClabe() {
+      const clabe = document.getElementById("web-bank-clabe").textContent;
+      navigator.clipboard.writeText(clabe);
+      const btn = document.getElementById("btn-copy-clabe");
+      btn.innerHTML = `<i class="fa-solid fa-check text-emerald-600"></i> ¡CLABE Copiada (${clabe})!`;
+      setTimeout(() => {
+        btn.innerHTML = `<i class="fa-regular fa-copy"></i> Copiar CLABE Interbancaria`;
+      }, 2800);
+    }
+
+    function sendRsvpToHost() {
+      const name = document.getElementById("rsvp-input-name").value.trim() || guestName;
+      const attending = document.getElementById("rsvp-input-attending").value;
+      const count = document.getElementById("rsvp-input-count").value;
+      const msg = document.getElementById("rsvp-input-message").value.trim();
+
+      const text = [
+        `✨ *CONFIRMACIÓN DE ASISTENCIA (RSVP)* ✨`,
+        `Evento: *${currentInvitation.categoryLabel} — ${currentInvitation.title}*`,
+        ``,
+        `👤 *Invitado / Familia:* ${name}`,
+        `📌 *Respuesta:* ${attending}`,
+        `🎟️ *Lugares confirmados:* ${count} (de ${guestPasses} reservados)`,
+        msg ? `💬 *Mensaje:* ${msg}` : ``
+      ].filter(Boolean).join("\n");
+
+      const url = `https://wa.me/${currentInvitation.rsvpWhatsapp}?text=${encodeURIComponent(text)}`;
+      window.open(url, "_blank");
+    }
+
+    function changeEventDemo(demoKey) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("demo", demoKey);
+      url.searchParams.set("formato", currentFormat);
+      window.location.href = url.toString();
+    }
+
+    function switchFormatView(format) {
+      currentFormat = format;
+      document.getElementById("view-web").classList.add("hidden");
+      document.getElementById("view-video").classList.add("hidden");
+      document.getElementById("view-pdf").classList.add("hidden");
+
+      const btns = {
+        web: document.getElementById("btn-format-web"),
+        video: document.getElementById("btn-format-video"),
+        pdf: document.getElementById("btn-format-pdf")
+      };
+
+      Object.values(btns).forEach(b => {
+        b.className = "px-3 py-1 rounded-lg font-semibold text-stone-300 hover:text-white transition";
+      });
+      btns[format].className = "px-3 py-1 rounded-lg font-semibold bg-amber-600 text-white shadow transition";
+
+      if (format === "web") {
+        document.getElementById("view-web").classList.remove("hidden");
+        stopVideoStory();
+      } else if (format === "video") {
+        document.getElementById("envelope-screen").classList.add("opened");
+        document.getElementById("view-video").classList.remove("hidden");
+        startVideoStory();
+      } else if (format === "pdf") {
+        document.getElementById("envelope-screen").classList.add("opened");
+        document.getElementById("view-pdf").classList.remove("hidden");
+        stopVideoStory();
+      }
+    }
+
+    // Lógica para el reproductor de Video-Invitación (Story 9:16)
+    function getVideoSlides(inv) {
+      return [
+        {
+          label: inv.badgeText,
+          img: inv.heroImage,
+          html: `
+            <span class="px-3 py-1 rounded-full bg-white/20 text-[10px] uppercase tracking-widest font-bold">${inv.categoryLabel}</span>
+            <h2 class="font-script text-5xl sm:text-6xl mt-4">${inv.title}</h2>
+            <p class="text-sm text-stone-200 mt-3">${inv.subtitle}</p>
+            <div class="mt-6 inline-block border-y border-amber-300/60 py-2 px-5 font-serif-luxury text-xl text-amber-200">${inv.dateText}</div>
+          `
+        },
+        {
+          label: "Bendición Familiar",
+          img: (inv.gallery && inv.gallery[0]) || inv.heroImage,
+          html: `
+            <p class="font-serif-luxury italic text-xl text-amber-100 leading-relaxed">${inv.quote}</p>
+            <div class="mt-6 bg-black/45 backdrop-blur-md p-4 rounded-2xl border border-white/20 text-xs space-y-2">
+              <p class="text-amber-300 font-bold uppercase tracking-wider">${inv.hostsLeftTitle}</p>
+              <p>${(inv.hostsLeft || []).join(" & ")}</p>
+              <p class="text-amber-300 font-bold uppercase tracking-wider pt-2">${inv.hostsRightTitle}</p>
+              <p>${(inv.hostsRight || []).join(" & ")}</p>
+            </div>
+          `
+        },
+        {
+          label: "Ceremonia",
+          img: (inv.gallery && inv.gallery[1]) || inv.heroImage,
+          html: `
+            <div class="w-14 h-14 rounded-full bg-amber-500/30 border border-amber-300 mx-auto flex items-center justify-center text-2xl mb-3">
+              <i class="fa-solid fa-church"></i>
+            </div>
+            <span class="text-xs uppercase tracking-widest text-amber-300 font-bold">Ceremonia • ${inv.ceremony.time}</span>
+            <h3 class="font-serif-luxury text-3xl font-bold mt-1">${inv.ceremony.name}</h3>
+            <p class="text-xs text-stone-200 mt-2">${inv.ceremony.address}</p>
+          `
+        },
+        {
+          label: "Recepción & Fiesta",
+          img: (inv.gallery && inv.gallery[2]) || inv.heroImage,
+          html: `
+            <div class="w-14 h-14 rounded-full bg-amber-500/30 border border-amber-300 mx-auto flex items-center justify-center text-2xl mb-3">
+              <i class="fa-solid fa-champagne-glasses"></i>
+            </div>
+            <span class="text-xs uppercase tracking-widest text-amber-300 font-bold">Recepción • ${inv.reception.time}</span>
+            <h3 class="font-serif-luxury text-3xl font-bold mt-1">${inv.reception.name}</h3>
+            <p class="text-xs text-stone-200 mt-2">${inv.reception.address}</p>
+            <p class="mt-4 text-xs bg-white/15 py-1.5 px-3 rounded-full inline-block">Vestimenta: ${inv.dressCode.title}</p>
+          `
+        },
+        {
+          label: "Pase Especial",
+          img: (inv.gallery && inv.gallery[3]) || inv.heroImage,
+          html: `
+            <div class="bg-white/15 backdrop-blur-md p-6 rounded-3xl border border-amber-300/50">
+              <span class="text-[10px] uppercase tracking-widest text-amber-300 font-bold">Te esperamos</span>
+              <h3 class="font-serif-luxury text-3xl font-bold mt-1">${guestName}</h3>
+              <p class="text-xs text-amber-200 mt-1">Pase reservado para ${guestPasses} personas</p>
+              <p class="text-[11px] text-stone-300 mt-4">Confirma antes del ${inv.rsvpDeadline}</p>
+            </div>
+          `
+        }
+      ];
+    }
+
+    function renderVideoSlide() {
+      const slides = getVideoSlides(currentInvitation);
+      const slide = slides[videoSlideIndex % slides.length];
+      document.getElementById("video-bg-img").src = slide.img;
+      document.getElementById("video-header-label").textContent = slide.label;
+
+      const content = document.getElementById("video-slide-content");
+      content.classList.remove("video-slide-active");
+      void content.offsetWidth;
+      content.innerHTML = slide.html;
+      content.classList.add("video-slide-active");
+
+      const bars = document.querySelectorAll("#video-progress-bars > div > div");
+      bars.forEach((b, idx) => {
+        b.style.width = idx <= videoSlideIndex ? "100%" : "0%";
+      });
+    }
+
+    function startVideoStory() {
+      stopVideoStory();
+      videoSlideIndex = 0;
+      videoPlaying = true;
+      musicPlayer.start();
+      updateMusicIcon(true);
+      renderVideoSlide();
+      videoInterval = setInterval(() => {
+        if (videoPlaying) {
+          videoSlideIndex = (videoSlideIndex + 1) % 5;
+          renderVideoSlide();
+        }
+      }, 3800);
+    }
+
+    function stopVideoStory() {
+      if (videoInterval) {
+        clearInterval(videoInterval);
+        videoInterval = null;
+      }
+    }
+
+    function nextVideoSlide() {
+      videoSlideIndex = (videoSlideIndex + 1) % 5;
+      renderVideoSlide();
+    }
+
+    function prevVideoSlide() {
+      videoSlideIndex = (videoSlideIndex - 1 + 5) % 5;
+      renderVideoSlide();
+    }
+
+    function toggleVideoAutoplay() {
+      videoPlaying = !videoPlaying;
+      const btn = document.getElementById("video-play-btn");
+      btn.innerHTML = videoPlaying ? `<i class="fa-solid fa-pause mr-1"></i> Pausa` : `<i class="fa-solid fa-play mr-1"></i> Reproducir`;
+    }
+
+    document.addEventListener("DOMContentLoaded", loadInvitationParameters);
+  </script>
+</body>
+</html>

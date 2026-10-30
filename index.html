@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aura Digital | Invitaciones Digitales para Bodas, XV Años y Eventos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="bg-[#FAF8F5] text-stone-800 antialiased">
+
+  <!-- Barra superior de promoción configurable -->
+  <div id="top-promo-bar" class="bg-stone-900 text-amber-200 text-xs sm:text-sm py-2.5 px-4 text-center font-medium">
+    <i class="fa-solid fa-sparkles mr-1.5"></i>
+    <span id="ui-promo-text">Promoción de Temporada: En la compra de tu Invitación Web VIP llévate GRATIS el PDF Interactivo + Pases Personalizados por Familia. Precios en Pesos Mexicanos (MXN).</span>
+  </div>
+
+  <!-- Navegación Principal -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-stone-200/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-full bg-gradient-to-br from-amber-600 to-stone-900 flex items-center justify-center text-white shadow-md">
+          <i class="fa-solid fa-envelope-open-text text-lg"></i>
+        </div>
+        <div>
+          <span id="ui-brand-name" class="font-serif-luxury text-2xl font-bold tracking-tight text-stone-900 block leading-none">Aura Digital</span>
+          <span id="ui-brand-tagline" class="text-[11px] uppercase tracking-widest text-amber-700 font-semibold">Invitaciones & Eventos</span>
+        </div>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-6 text-sm font-medium text-stone-600">
+        <a href="#formatos" id="nav-link-formatos" class="hover:text-amber-700 transition">Formatos</a>
+        <a href="#catalogo" id="nav-link-catalogo" class="hover:text-amber-700 transition">Demos por Evento</a>
+        <a href="#modalidades" id="nav-link-modalidades" class="hover:text-amber-700 transition">Cómo Trabajamos</a>
+        <a href="#precios" id="nav-link-precios" class="hover:text-amber-700 transition">Paquetes</a>
+        <a href="#cotizador" id="nav-link-cotizador" class="hover:text-amber-700 transition">Cotizador</a>
+      </nav>
+
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Botones exclusivos de Admin (ocultos para clientes) -->
+        <a href="configuracion.html" id="header-admin-btn" class="hidden items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold bg-stone-900 hover:bg-stone-800 text-amber-400 border border-amber-500/50 transition">
+          <i class="fa-solid fa-user-shield"></i>
+          <span class="hidden sm:inline">Panel Admin</span>
+        </a>
+        <!-- Botón de Generador (solo visible si es Admin o si Admin lo habilitó al cliente) -->
+        <a href="generador.html" id="header-generator-btn" class="hidden items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-300 transition">
+          <i class="fa-solid fa-wand-magic-sparkles text-amber-700"></i>
+          <span>Estudio Generador</span>
+        </a>
+        <a href="#cotizador" class="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold bg-amber-700 hover:bg-amber-800 text-white shadow-md transition">
+          <i class="fa-brands fa-whatsapp text-base"></i>
+          Cotizar mi Evento
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Principal -->
+  <section class="relative overflow-hidden py-14 lg:py-24 bg-gradient-to-b from-[#FAF8F5] via-amber-50/30 to-[#FAF8F5]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-12 gap-12 items-center">
+      <div class="lg:col-span-7 space-y-6">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100/80 border border-amber-300/60 text-amber-900 text-xs font-semibold">
+          <span class="w-2 h-2 rounded-full bg-amber-600 animate-ping"></span>
+          <span id="ui-hero-events-pill">Bodas • XV Años • Bautizos • Baby Shower • Graduaciones</span>
+        </div>
+
+        <h1 class="font-serif-luxury text-4xl sm:text-6xl font-bold text-stone-900 leading-[1.08]">
+          Sorprende a tus invitados desde el <span class="italic text-amber-700 font-normal">primer clic</span>.
+        </h1>
+
+        <p class="text-base sm:text-lg text-stone-600 max-w-2xl leading-relaxed">
+          Diseñamos invitaciones digitales elegantes e inteligentes. Elige entre nuestras <strong>Invitaciones Web Interactivas</strong> (con música, GPS, cuenta regresiva y pases por familia), <strong>Video-Invitaciones HD</strong> o <strong>Tarjetas PDF Interactivas</strong>.
+        </p>
+
+        <div class="flex flex-wrap gap-3.5 pt-2">
+          <a href="#catalogo" id="hero-btn-catalogo" class="px-7 py-4 rounded-full bg-stone-900 hover:bg-stone-800 text-white font-semibold text-sm shadow-lg inline-flex items-center gap-2.5 transition">
+            <i class="fa-solid fa-eye text-amber-400"></i>
+            Ver Demos en Vivo
+          </a>
+          <a href="#cotizador" id="hero-btn-cotizador" class="px-7 py-4 rounded-full bg-white hover:bg-amber-50 text-stone-900 border border-stone-300 font-semibold text-sm shadow-sm inline-flex items-center gap-2.5 transition">
+            <i class="fa-solid fa-calculator text-amber-700"></i>
+            Cotizar mi Invitación
+          </a>
+          <a href="generador.html" id="hero-btn-generator" class="hidden px-6 py-4 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-semibold text-sm items-center gap-2 transition">
+            <i class="fa-solid fa-sliders"></i>
+            Probar Creador en Vivo
+          </a>
+        </div>
+
+        <!-- Mini badges de confianza -->
+        <div class="grid grid-cols-3 gap-4 pt-6 border-t border-stone-200/80 max-w-xl">
+          <div>
+            <p class="font-serif-luxury text-2xl sm:text-3xl font-bold text-stone-900">Diseño VIP</p>
+            <p class="text-xs text-stone-500">Web, Video HD y PDF Interactivo</p>
+          </div>
+          <div>
+            <p class="font-serif-luxury text-2xl sm:text-3xl font-bold text-stone-900">100% Lista</p>
+            <p class="text-xs text-stone-500">Servicio personalizado sin estrés</p>
+          </div>
+          <div>
+            <p class="font-serif-luxury text-2xl sm:text-3xl font-bold text-stone-900">Envíos Ilimitados</p>
+            <p class="text-xs text-stone-500">Comparte por WhatsApp sin límite</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mockup Interactivo de Celular -->
+      <div class="lg:col-span-5 flex justify-center">
+        <div class="relative w-[310px] sm:w-[340px] bg-stone-900 rounded-[44px] p-3 shadow-2xl border-4 border-stone-800 animate-float">
+          <div class="w-28 h-5 bg-stone-950 rounded-full mx-auto mb-2"></div>
+          <div class="bg-[#FDFBF7] rounded-[34px] overflow-hidden border border-stone-200 relative">
+            <div class="relative h-56">
+              <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80" alt="Demo Boda" class="w-full h-full object-cover" />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent flex flex-col justify-end p-5 text-center text-white">
+                <span class="text-[10px] uppercase tracking-[0.25em] text-amber-300 font-semibold">Nuestra Boda</span>
+                <h3 class="font-script text-4xl mt-1">Valentina & Sebastián</h3>
+                <p class="text-xs text-stone-200 mt-1">20 • Febrero • 2027</p>
+              </div>
+            </div>
+
+            <div class="p-5 text-center space-y-4">
+              <!-- Pase VIP de ejemplo -->
+              <div class="bg-amber-50/90 border border-amber-200 rounded-2xl p-3">
+                <p class="text-[10px] uppercase tracking-widest text-amber-800 font-bold">Pase Personalizado VIP</p>
+                <p class="font-serif-luxury text-lg font-bold text-stone-900">Familia Gómez Pérez</p>
+                <span class="inline-block mt-1 px-3 py-0.5 rounded-full bg-amber-700 text-white text-[11px] font-semibold">
+                  <i class="fa-solid fa-ticket mr-1"></i> 4 Lugares Reservados
+                </span>
+              </div>
+
+              <!-- Mini contador -->
+              <div class="grid grid-cols-4 gap-1.5 text-center">
+                <div class="bg-stone-100 rounded-xl py-2">
+                  <span class="font-serif-luxury text-lg font-bold text-stone-900 block leading-none">112</span>
+                  <span class="text-[9px] uppercase text-stone-500">Días</span>
+                </div>
+                <div class="bg-stone-100 rounded-xl py-2">
+                  <span class="font-serif-luxury text-lg font-bold text-stone-900 block leading-none">08</span>
+                  <span class="text-[9px] uppercase text-stone-500">Hrs</span>
+                </div>
+                <div class="bg-stone-100 rounded-xl py-2">
+                  <span class="font-serif-luxury text-lg font-bold text-stone-900 block leading-none">45</span>
+                  <span class="text-[9px] uppercase text-stone-500">Min</span>
+                </div>
+                <div class="bg-stone-100 rounded-xl py-2">
+                  <span class="font-serif-luxury text-lg font-bold text-stone-900 block leading-none">19</span>
+                  <span class="text-[9px] uppercase text-stone-500">Seg</span>
+                </div>
+              </div>
+
+              <!-- Botones rápidos del demo -->
+              <div class="grid grid-cols-2 gap-2 pt-1">
+                <a href="invitacion.html?demo=boda&formato=web&invitado=Familia+G%C3%B3mez+P%C3%A9rez&pases=4" class="col-span-2 py-2.5 px-4 rounded-xl bg-amber-700 hover:bg-amber-800 text-white text-xs font-semibold shadow flex items-center justify-center gap-2 transition">
+                  <i class="fa-solid fa-envelope-open"></i> Abrir Invitación Interactiva
+                </a>
+                <a href="invitacion.html?demo=boda&formato=video" id="mockup-btn-video" class="py-2 px-3 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-[11px] font-semibold flex items-center justify-center gap-1.5 transition">
+                  <i class="fa-solid fa-film text-amber-700"></i> Ver Video
+                </a>
+                <a href="invitacion.html?demo=boda&formato=pdf" id="mockup-btn-pdf" class="py-2 px-3 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-[11px] font-semibold flex items-center justify-center gap-1.5 transition">
+                  <i class="fa-solid fa-file-pdf text-amber-700"></i> Ver PDF
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Clasificación 1: Los 3 Formatos Disponibles -->
+  <section id="formatos" class="py-16 bg-white border-y border-stone-200/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-12">
+        <span class="text-xs font-bold uppercase tracking-widest text-amber-700">Nuestros Formatos Digitales</span>
+        <h2 class="font-serif-luxury text-3xl sm:text-5xl font-bold text-stone-900 mt-2">
+          Elige el formato ideal para tu celebración
+        </h2>
+        <p class="text-stone-600 mt-3 text-sm sm:text-base">
+          Puedes contratar cualquiera de nuestros formatos de forma individual o combinarlos en nuestro paquete todo incluido.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8" id="formats-cards-grid">
+        <!-- Formato 1: Imagen / PDF Interactivo -->
+        <div id="card-format-pdf" class="rounded-3xl border border-stone-200 bg-[#FAF8F5] p-7 flex flex-col justify-between hover:shadow-xl transition">
+          <div>
+            <div class="flex items-center justify-between mb-5">
+              <span class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-file-pdf"></i>
+              </span>
+              <span id="ui-badge-price-pdf" class="px-3 py-1 rounded-full bg-stone-200 text-stone-700 text-xs font-bold">
+                Desde $490 MXN
+              </span>
+            </div>
+            <h3 class="font-serif-luxury text-2xl font-bold text-stone-900">Imagen / PDF Interactivo</h3>
+            <p class="text-sm text-stone-600 mt-2 leading-relaxed">
+              Tarjeta vertical de alta resolución (1 página) con botones clicables integrados. Ideal para quienes buscan algo práctico, rápido y directo.
+            </p>
+            <ul class="mt-5 space-y-2.5 text-xs sm:text-sm text-stone-700">
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-700"></i> Botón clicable a ubicación en Google Maps</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-700"></i> Botón directo para confirmar por WhatsApp</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-700"></i> Enlace a Mesa de Regalos</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-700"></i> Listo para enviar como archivo por WhatsApp</li>
+            </ul>
+          </div>
+          <div class="mt-7 pt-5 border-t border-stone-200 flex gap-2">
+            <a href="invitacion.html?demo=boda&formato=pdf" class="flex-1 py-2.5 px-4 rounded-xl bg-white border border-stone-300 hover:border-amber-700 text-stone-800 text-xs font-semibold text-center transition">
+              Ver Ejemplo PDF
+            </a>
+            <button onclick="selectFormatInQuoter('pdf')" class="py-2.5 px-4 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold transition">
+              Elegir
+            </button>
+          </div>
+        </div>
+
+        <!-- Formato 2: Video-Invitación Animada -->
+        <div id="card-format-video" class="rounded-3xl border border-stone-200 bg-[#FAF8F5] p-7 flex flex-col justify-between hover:shadow-xl transition">
+          <div>
+            <div class="flex items-center justify-between mb-5">
+              <span class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-800 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-clapperboard"></i>
+              </span>
+              <span id="ui-badge-price-video" class="px-3 py-1 rounded-full bg-rose-100 text-rose-800 text-xs font-bold">
+                Desde $790 MXN
+              </span>
+            </div>
+            <h3 class="font-serif-luxury text-2xl font-bold text-stone-900">Video-Invitación Animada</h3>
+            <p class="text-sm text-stone-600 mt-2 leading-relaxed">
+              Video vertical en alta definición (formato Historia/Reel 9:16) con música emotiva, transiciones animadas, fotos y todos los datos del evento.
+            </p>
+            <ul class="mt-5 space-y-2.5 text-xs sm:text-sm text-stone-700">
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-rose-700"></i> Animación de textos, fotos y destellos</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-rose-700"></i> Música personalizada de fondo</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-rose-700"></i> Perfecto como <em>Save the Date</em> o invitación</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-rose-700"></i> Se reproduce directo en el chat de WhatsApp</li>
+            </ul>
+          </div>
+          <div class="mt-7 pt-5 border-t border-stone-200 flex gap-2">
+            <a href="invitacion.html?demo=xv&formato=video" class="flex-1 py-2.5 px-4 rounded-xl bg-white border border-stone-300 hover:border-rose-700 text-stone-800 text-xs font-semibold text-center transition">
+              Ver Ejemplo Video
+            </a>
+            <button onclick="selectFormatInQuoter('video')" class="py-2.5 px-4 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold transition">
+              Elegir
+            </button>
+          </div>
+        </div>
+
+        <!-- Formato 3: Invitación Web Interactiva (Estrella) -->
+        <div id="card-format-web" class="rounded-3xl border-2 border-amber-600 bg-gradient-to-b from-amber-50/70 to-white p-7 flex flex-col justify-between shadow-lg relative">
+          <div class="absolute -top-3.5 right-6 px-3.5 py-1 rounded-full bg-amber-700 text-white text-[11px] font-bold uppercase tracking-wider shadow">
+            Formato Estrella ★
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-5">
+              <span class="w-12 h-12 rounded-2xl bg-amber-700 text-white flex items-center justify-center text-xl shadow">
+                <i class="fa-solid fa-globe"></i>
+              </span>
+              <span id="ui-badge-price-web" class="px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold">
+                Desde $890 MXN
+              </span>
+            </div>
+            <h3 class="font-serif-luxury text-2xl font-bold text-stone-900">Invitación Web Interactiva</h3>
+            <p class="text-sm text-stone-600 mt-2 leading-relaxed">
+              La experiencia más completa y elegante: un sitio web exclusivo para tu evento con sobre animado, música, mapas GPS, galería y control de pases.
+            </p>
+            <ul class="mt-5 space-y-2.5 text-xs sm:text-sm text-stone-700">
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-700"></i> Apertura de sobre con sello y música</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-700"></i> Cuenta regresiva en tiempo real e itinerario</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-700"></i> Mesa de regalos y CLABE con copia en 1 clic</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-700"></i> <strong>Pases personalizados por familia</strong> y RSVP</li>
+            </ul>
+          </div>
+          <div class="mt-7 pt-5 border-t border-amber-200 flex gap-2">
+            <a href="invitacion.html?demo=boda&formato=web&invitado=Familia+G%C3%B3mez+P%C3%A9rez&pases=4" class="flex-1 py-2.5 px-4 rounded-xl bg-amber-700 hover:bg-amber-800 text-white text-xs font-semibold text-center shadow transition">
+              Ver Demo Web VIP
+            </a>
+            <button onclick="selectFormatInQuoter('web_premium')" class="py-2.5 px-4 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold transition">
+              Elegir
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Catálogo de Demos por Tipo de Evento -->
+  <section id="catalogo" class="py-16 lg:py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-widest text-amber-700">Catálogo Interactivo</span>
+          <h2 class="font-serif-luxury text-3xl sm:text-5xl font-bold text-stone-900 mt-1">
+            Explora nuestras plantillas por tipo de evento
+          </h2>
+        </div>
+        <!-- Botón visible solo para el Admin -->
+        <div id="catalog-admin-actions" class="hidden items-center gap-3">
+          <a href="configuracion.html" class="px-4 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-amber-400 text-xs font-semibold border border-stone-700 transition">
+            <i class="fa-solid fa-user-shield mr-1"></i> Admin: Agregar / Ocultar Eventos
+          </a>
+        </div>
+      </div>
+
+      <!-- Tarjetas de Demos -->
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8" id="catalog-grid">
+        <!-- Se llena dinámicamente desde JS con todos los eventos activos -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Clasificación 2: Modalidades de Servicio -->
+  <section id="modalidades" class="py-16 bg-stone-900 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-12">
+        <span class="text-xs font-bold uppercase tracking-widest text-amber-400">Cómo Trabajamos</span>
+        <h2 class="font-serif-luxury text-3xl sm:text-5xl font-bold mt-2">
+          Elige cómo quieres crear tu invitación
+        </h2>
+        <p class="text-stone-300 mt-3 text-sm sm:text-base">
+          Nos adaptamos a ti: desde encargarnos de absolutamente todo el diseño hasta recibir tu solicitud directa en línea.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8" id="modalities-cards-grid">
+        <!-- Modalidad 1 (Principal) -->
+        <div id="card-mod-concierge" class="rounded-3xl bg-stone-800/90 border-2 border-amber-500 p-7 relative flex flex-col justify-between">
+          <div>
+            <span class="inline-block px-3 py-1 rounded-full bg-amber-500 text-stone-950 text-[11px] font-bold uppercase tracking-wider mb-4">
+              Modalidad Principal (Recomendada)
+            </span>
+            <h3 class="font-serif-luxury text-2xl font-bold text-white">Servicio Personalizado Concierge</h3>
+            <p class="text-sm text-stone-300 mt-2 leading-relaxed">
+              <strong>Nosotros hacemos todo por ti.</strong> Nos envías los datos y fotos de tu evento por WhatsApp y un diseñador arma tu invitación cuidando cada detalle.
+            </p>
+            <ol class="mt-5 space-y-2.5 text-xs sm:text-sm text-stone-200">
+              <li><span class="text-amber-400 font-bold">Paso 1:</span> Eliges tu paquete y nos contactas por WhatsApp.</li>
+              <li><span class="text-amber-400 font-bold">Paso 2:</span> Nos compartes tus textos, ubicaciones y fotos.</li>
+              <li><span class="text-amber-400 font-bold">Paso 3:</span> Te entregamos tu invitación lista para compartir.</li>
+            </ol>
+          </div>
+          <a href="#cotizador" onclick="setModalityInQuoter('Personalizado Concierge (Ustedes diseñan todo por mí)')" class="mt-6 w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs sm:text-sm inline-flex items-center justify-center gap-2 transition">
+            <i class="fa-brands fa-whatsapp text-base"></i> Solicitar Servicio Personalizado
+          </a>
+        </div>
+
+        <!-- Modalidad 2 (Híbrida) -->
+        <div id="card-mod-hibrido" class="rounded-3xl bg-stone-800/50 border border-stone-700 p-7 flex flex-col justify-between">
+          <div>
+            <span class="inline-block px-3 py-1 rounded-full bg-stone-700 text-amber-300 text-[11px] font-bold uppercase tracking-wider mb-4">
+              Modalidad Catálogo Híbrido
+            </span>
+            <h3 class="font-serif-luxury text-2xl font-bold text-white">Pedido Rápido en Línea + Revisión</h3>
+            <p class="text-sm text-stone-300 mt-2 leading-relaxed">
+              Ideal si ya viste una plantilla del catálogo que te encantó. Llenas el formulario de pedido aquí mismo con los datos de tu evento y nosotros la pulimos y publicamos.
+            </p>
+            <ul class="mt-5 space-y-2.5 text-xs sm:text-sm text-stone-300">
+              <li><i class="fa-solid fa-check text-amber-400 mr-2"></i> Selección directa de plantilla del catálogo</li>
+              <li><i class="fa-solid fa-check text-amber-400 mr-2"></i> Cotización instantánea</li>
+              <li><i class="fa-solid fa-check text-amber-400 mr-2"></i> Revisión profesional de diseño antes de entregar</li>
+            </ul>
+          </div>
+          <a href="#cotizador" onclick="setModalityInQuoter('Híbrido (Elijo plantilla y dejo mis datos en línea)')" class="mt-6 w-full py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs sm:text-sm inline-flex items-center justify-center gap-2 transition">
+            <i class="fa-solid fa-list-check"></i> Llenar Solicitud en Línea
+          </a>
+        </div>
+
+        <!-- Modalidad 3 (Autogestión / Estudio) -->
+        <div id="card-mod-autogestion" class="rounded-3xl bg-stone-800/50 border border-stone-700 p-7 flex flex-col justify-between">
+          <div>
+            <span class="inline-block px-3 py-1 rounded-full bg-stone-700 text-emerald-300 text-[11px] font-bold uppercase tracking-wider mb-4">
+              Modalidad Express / Autogestión
+            </span>
+            <h3 class="font-serif-luxury text-2xl font-bold text-white">Estudio Interactivo en Vivo</h3>
+            <p class="text-sm text-stone-300 mt-2 leading-relaxed">
+              Personaliza una plantilla en nuestro Estudio Generador, edita nombres, colores y fotos en tiempo real y previsualiza tu invitación al instante.
+            </p>
+            <ul class="mt-5 space-y-2.5 text-xs sm:text-sm text-stone-300">
+              <li><i class="fa-solid fa-check text-emerald-400 mr-2"></i> Previsualización instantánea</li>
+              <li><i class="fa-solid fa-check text-emerald-400 mr-2"></i> Descarga directa de Tarjeta / PDF Interactivo</li>
+              <li><i class="fa-solid fa-check text-emerald-400 mr-2"></i> Creador de links con pases por familia</li>
+            </ul>
+          </div>
+          <a href="generador.html" class="mt-6 w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs sm:text-sm inline-flex items-center justify-center gap-2 transition">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Abrir Estudio Generador
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Paquetes y Precios en Pesos Mexicanos (MXN) -->
+  <section id="precios" class="py-16 lg:py-20 bg-[#FAF8F5]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-12">
+        <span class="text-xs font-bold uppercase tracking-widest text-amber-700">Nuestros Paquetes Web</span>
+        <h2 class="font-serif-luxury text-3xl sm:text-5xl font-bold text-stone-900 mt-2">
+          Paquetes de Invitaciones Web Interactivas
+        </h2>
+        <p class="text-stone-600 mt-3 text-sm sm:text-base" id="ui-prices-subtitle">
+          Pago único en <strong>Pesos Mexicanos (MXN)</strong>. Sin mensualidades ocultas y con envíos ilimitados para todos tus invitados.
+        </p>
+      </div>
+
+      <div class="grid lg:grid-cols-3 gap-8 items-stretch">
+        <!-- Paquete Esencial -->
+        <div class="rounded-3xl bg-white border border-stone-200 p-8 flex flex-col justify-between shadow-sm">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-stone-500">Paquete Web 1</span>
+            <h3 class="font-serif-luxury text-3xl font-bold text-stone-900 mt-1">Web Esencial</h3>
+            <div class="mt-4 flex items-baseline gap-1" id="price-box-esencial">
+              <span id="ui-card-price-esencial" class="font-serif-luxury text-5xl font-bold text-stone-900">$890</span>
+              <span class="text-sm font-semibold text-stone-500">MXN / pago único</span>
+            </div>
+            <p class="text-xs text-stone-500 mt-2">Ideal para eventos íntimos que requieren ubicación GPS y confirmación rápida.</p>
+
+            <ul class="mt-6 space-y-3 text-sm text-stone-700">
+              <li class="flex items-start gap-2.5"><i class="fa-solid fa-check text-emerald-600 mt-1"></i> Portada elegante con nombres y fecha</li>
+              <li class="flex items-start gap-2.5"><i class="fa-solid fa-check text-emerald-600 mt-1"></i> Cuenta regresiva en tiempo real</li>
+              <li class="flex items-start gap-2.5"><i class="fa-solid fa-check text-emerald-600 mt-1"></i> Ceremonia y Recepción con botón a Google Maps</li>
+              <li class="flex items-start gap-2.5"><i class="fa-solid fa-check text-emerald-600 mt-1"></i> Confirmación de asistencia (RSVP) a tu WhatsApp</li>
+              <li class="flex items-start gap-2.5"><i class="fa-solid fa-check text-emerald-600 mt-1"></i> Envíos ilimitados a tus invitados</li>
+            </ul>
+          </div>
+
+          <button onclick="selectFormatInQuoter('web_esencial')" id="ui-btn-price-esencial" class="mt-8 w-full py-3.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-900 font-semibold text-sm transition">
+            Elegir Web Esencial
+          </button>
+        </div>
+
+        <!-- Paquete Premium (Más Vendido) -->
+        <div class="rounded-3xl bg-white border-2 border-amber-600 p-8 flex flex-col justify-between shadow-xl relative lg:-translate-y-2">
+          <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-amber-700 text-white text-xs font-bold uppercase tracking-wider shadow">
+            El Más Vendido ★
+          </div>
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-700">Paquete Web 2</span>
+            <h3 class="font-serif-luxury text-3xl font-bold text-stone-900 mt-1">Web Premium</h3>
+            <div class="mt-4 flex items-baseline gap-1" id="price-box-premium">
+              <span id="ui-card-price-premium" class="font-serif-luxury text-5xl font-bold text-amber-800">$1,490</span>
+              <span class="text-sm font-semibold text-stone-500">MXN / pago único</span>
+            </div>
+            <p class="text-xs text-stone-500 mt-2">La invitación completa con música, galería, itinerario y mesa de regalos.</p>
+
+            <ul class="mt-6 space-y-3 text-sm text-stone-700">
+              <li class="flex items-start gap-2.5"><i class="fa-solid fa-check text-amber-700 mt-1"></i> <strong>Todo lo del Paquete Esencial</strong>, más:</li>
+              <li class="flex items-start gap-2.5"><i class="fa-solid fa-check text-amber-700 mt-1"></i> <strong>Sobre animado</strong> con sello de apertura</li>
+              <li class="flex items-start gap-2.5"><i class="fa-solid fa-check text-amber-700 mt-1"></i> <strong>Música de fondo</strong> en toda la invitación</li>
+              <li class="flex items-start gap-2.5"><i class="fa-solid fa-check text-amber-700 mt-1"></i> Sección de Padres y Padrinos</li>
+              <li class="flex items-start gap-2.5"><i class="fa-solid fa-check text-amber-700 mt-1"></i> <strong>Itinerario de actividades</strong> con íconos</li>
+              <li class="flex items-start gap-2.5"><i class="fa-solid fa-check text-amber-700 mt-1"></i> <strong>Mesa de Regalos</strong> (Tiendas + CLABE bancaria con botón copiar)</li>
+              <li class="flex items-start gap-2.5"><i class="fa-solid fa-check text-amber-700 mt-1"></i> <strong>Galería de fotos</strong> y Código de Vestimenta</li>
+            </ul>
+          </div>
+
+          <button onclick="selectFormatInQuoter('web_premium')" id="ui-btn-price-premium" class="mt-8 w-full py-3.5 rounded-xl bg-amber-700 hover:bg-amber-800 text-white font-semibold text-sm shadow-md transition">
+            Elegir Web Premium
+          </button>
+        </div>
+
+        <!-- Paquete VIP Diamante -->
+        <div class="rounded-3xl bg-stone-900 text-white border border-stone-800 p-8 flex flex-col justify-between shadow-lg">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Paquete Web 3 • Todo Incluido</span>
+            <h3 class="font-serif-luxury text-3xl font-bold mt-1">VIP Diamante</h3>
+            <div class="mt-4 flex items-baseline gap-1" id="price-box-vip">
+              <span id="ui-card-price-vip" class="font-serif-luxury text-5xl font-bold text-amber-400">$2,290</span>
+              <span class="text-sm font-semibold text-stone-400">MXN / pago único</span>
+            </div>
+            <p class="text-xs text-stone-400 mt-2">Incluye los 3 formatos + Control de Pases Personalizados por Familia.</p>
+
+            <ul class="mt-6 space-y-3 text-sm text-stone-200">
+              <li class="flex items-start gap-2.5"><i class="fa-solid fa-crown text-amber-400 mt-1"></i> <strong>Todo lo del Paquete Premium</strong>, más:</li>
+              <li class="flex items-start gap-2.5"><i class="fa-solid fa-check text-amber-400 mt-1"></i> <strong>Pases Personalizados por Familia:</strong> cada link muestra el nombre de la familia y limita los boletos asignados</li>
+              <li class="flex items-start gap-2.5"><i class="fa-solid fa-check text-amber-400 mt-1"></i> <strong>Incluye Tarjeta PDF Interactiva</strong> gratis</li>
+              <li class="flex items-start gap-2.5"><i class="fa-solid fa-check text-amber-400 mt-1"></i> <strong>Incluye Video-Invitación "Save the Date"</strong></li>
+              <li class="flex items-start gap-2.5"><i class="fa-solid fa-check text-amber-400 mt-1"></i> Panel para enviar pases individuales por WhatsApp</li>
+            </ul>
+          </div>
+
+          <button onclick="selectFormatInQuoter('web_vip')" id="ui-btn-price-vip" class="mt-8 w-full py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-sm shadow-md transition">
+            Elegir VIP Diamante
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cotizador Interactivo y Formulario de Pedido en MXN -->
+  <section id="cotizador" class="py-16 lg:py-20 bg-white border-t border-stone-200">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-10">
+        <span class="text-xs font-bold uppercase tracking-widest text-amber-700">Solicitud de Invitación</span>
+        <h2 class="font-serif-luxury text-3xl sm:text-5xl font-bold text-stone-900 mt-1">
+          Arma tu paquete y haz tu pedido
+        </h2>
+        <p class="text-sm text-stone-600 mt-2">
+          Selecciona el tipo de evento, formato y modalidad y envíanos tu solicitud por WhatsApp.
+        </p>
+      </div>
+
+      <div class="bg-[#FAF8F5] border border-stone-200 rounded-3xl p-6 sm:p-10 shadow-sm grid lg:grid-cols-12 gap-8">
+        <!-- Columna Izquierda: Opciones -->
+        <div class="lg:col-span-7 space-y-5">
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1.5">1. Tipo de Evento</label>
+              <select id="quote-event-type" class="w-full rounded-xl border border-stone-300 bg-white px-3.5 py-2.5 text-sm focus:outline-none focus:border-amber-700">
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1.5">2. Modalidad de Atención</label>
+              <select id="quote-modality" class="w-full rounded-xl border border-stone-300 bg-white px-3.5 py-2.5 text-sm focus:outline-none focus:border-amber-700">
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1.5">3. Formato o Paquete Principal</label>
+            <select id="quote-format" onchange="recalculateQuote()" class="w-full rounded-xl border border-stone-300 bg-white px-3.5 py-3 text-sm font-semibold text-stone-900 focus:outline-none focus:border-amber-700">
+            </select>
+          </div>
+
+          <!-- Complementos / Extras -->
+          <div id="quote-extras-wrapper">
+            <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-2">4. Complementos Opcionales</label>
+            <div class="space-y-2" id="quote-extras-container">
+            </div>
+          </div>
+
+          <!-- Datos del Cliente -->
+          <div class="grid sm:grid-cols-2 gap-4 pt-2">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1">Tu Nombre</label>
+              <input type="text" id="quote-client-name" placeholder="Ej. Mariana Morales" class="w-full rounded-xl border border-stone-300 bg-white px-3.5 py-2.5 text-sm focus:outline-none focus:border-amber-700" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1">Fecha aproximada del evento</label>
+              <input type="date" id="quote-event-date" class="w-full rounded-xl border border-stone-300 bg-white px-3.5 py-2.5 text-sm focus:outline-none focus:border-amber-700" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1">Nombres de los festejados / Notas de estilo</label>
+            <input type="text" id="quote-event-notes" placeholder="Ej. Valentina y Sebastián — Tonos dorado y marfil" class="w-full rounded-xl border border-stone-300 bg-white px-3.5 py-2.5 text-sm focus:outline-none focus:border-amber-700" />
+          </div>
+        </div>
+
+        <!-- Columna Derecha: Resumen de Cotización -->
+        <div class="lg:col-span-5 bg-stone-900 text-white rounded-2xl p-6 sm:p-7 flex flex-col justify-between">
+          <div>
+            <span class="text-[11px] uppercase tracking-widest text-amber-400 font-bold">Resumen de tu Solicitud</span>
+            <h3 class="font-serif-luxury text-2xl font-bold mt-1" id="summary-package-name">Invitación Web — Paquete Premium</h3>
+            <p class="text-xs text-stone-300 mt-1.5" id="summary-package-desc">
+              Sobre animado, música, cuenta regresiva, mapas GPS, itinerario, galería, mesa de regalos y código de vestimenta.
+            </p>
+
+            <div id="summary-pricing-breakdown" class="mt-6 pt-5 border-t border-stone-700 space-y-2 text-sm">
+              <div class="flex justify-between">
+                <span class="text-stone-400">Paquete Base:</span>
+                <span class="font-semibold" id="summary-base-price">$1,490 MXN</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-stone-400">Complementos:</span>
+                <span class="font-semibold text-amber-300" id="summary-extras-price">$0 MXN</span>
+              </div>
+            </div>
+
+            <div class="mt-5 pt-4 border-t border-stone-700 flex items-baseline justify-between">
+              <span class="text-xs uppercase tracking-wider text-stone-300 font-bold">Total Estimado:</span>
+              <div class="text-right">
+                <span class="font-serif-luxury text-4xl font-bold text-amber-400" id="summary-total-price">$1,490</span>
+                <span class="text-xs font-bold text-stone-300" id="summary-currency-label">MXN</span>
+              </div>
+            </div>
+            <p class="text-[11px] text-stone-400 mt-2">
+              * Puedes apartar tu diseño con el 50% de anticipo y liquidar al recibir tu invitación terminada.
+            </p>
+          </div>
+
+          <div class="mt-7 space-y-3">
+            <button onclick="sendQuoteViaWhatsapp()" class="w-full py-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-lg flex items-center justify-center gap-2 transition">
+              <i class="fa-brands fa-whatsapp text-lg"></i>
+              Enviar Solicitud por WhatsApp
+            </button>
+            <a href="generador.html" id="quoter-generator-btn" class="hidden w-full py-3 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 font-semibold text-xs items-center justify-center gap-2 transition">
+              <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
+              O diseña una vista previa en el Generador
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pie de página -->
+  <footer class="bg-stone-950 text-stone-400 py-12 border-t border-stone-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-full bg-amber-700 flex items-center justify-center text-white">
+          <i class="fa-solid fa-envelope-open-text text-sm"></i>
+        </div>
+        <div>
+          <span id="ui-footer-brand" class="font-serif-luxury text-xl font-bold text-white block leading-none">Aura Digital</span>
+          <span class="text-[11px] text-stone-500">Invitaciones Digitales para Eventos</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-5 text-xs">
+        <p class="text-xs text-stone-500">© 2026 <span id="ui-footer-copy">Aura Digital</span>. Todos los derechos reservados.</p>
+        <!-- Acceso discreto para el Propietario / Admin -->
+        <a href="configuracion.html" class="text-stone-600 hover:text-amber-400 transition flex items-center gap-1" title="Acceso Propietario / Administrador">
+          <i class="fa-solid fa-lock text-[10px]"></i> Admin
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script>
+    function formatMXN(amount) {
+      return "$" + Number(amount).toLocaleString("es-MX");
+    }
+
+    function applyDynamicBusinessUI() {
+      const cfg = window.getBusinessConfig();
+      const presets = window.getEventPresets();
+      const vis = cfg.clientVisibility;
+      const isAdminView = window.hasEffectiveAdminView();
+      const canSeeGenerator = isAdminView || Boolean(vis.allowClientGenerator);
+      const showPrices = vis.showPublicPrices !== false;
+
+      // Renderizar barra flotante si tiene sesión iniciada
+      window.renderAdminFloatingBar();
+
+      // Mostrar botones exclusivos de Admin si está en vista Admin
+      if (isAdminView) {
+        const adminBtn = document.getElementById("header-admin-btn");
+        adminBtn.classList.remove("hidden");
+        adminBtn.classList.add("inline-flex");
+        const catAdmin = document.getElementById("catalog-admin-actions");
+        catAdmin.classList.remove("hidden");
+        catAdmin.classList.add("flex");
+      }
+
+      // Mostrar botones del Generador solo si es Admin o si Admin dio permiso al cliente
+      if (canSeeGenerator) {
+        const genHeader = document.getElementById("header-generator-btn");
+        genHeader.classList.remove("hidden");
+        genHeader.classList.add("inline-flex");
+        const genHero = document.getElementById("hero-btn-generator");
+        genHero.classList.remove("hidden");
+        genHero.classList.add("inline-flex");
+        const genQuoter = document.getElementById("quoter-generator-btn");
+        genQuoter.classList.remove("hidden");
+        genQuoter.classList.add("flex");
+      }
+
+      // Marca y Textos
+      document.title = `${cfg.brandName} | ${cfg.tagline}`;
+      document.getElementById("ui-brand-name").textContent = cfg.brandName;
+      document.getElementById("ui-brand-tagline").textContent = cfg.tagline;
+      document.getElementById("ui-footer-brand").textContent = cfg.brandName;
+      document.getElementById("ui-footer-copy").textContent = cfg.brandName;
+
+      // 1. Barra de Promoción Superior
+      if (vis.showPromoBanner !== false && cfg.promoBanner) {
+        document.getElementById("ui-promo-text").textContent = cfg.promoBanner;
+        document.getElementById("top-promo-bar").classList.remove("hidden");
+      } else {
+        document.getElementById("top-promo-bar").classList.add("hidden");
+      }
+
+      // 2. Sección de Formatos y tarjetas individuales
+      const formatsSection = document.getElementById("formatos");
+      const navFormatos = document.getElementById("nav-link-formatos");
+      if (vis.showFormatsSection === false) {
+        formatsSection.classList.add("hidden");
+        navFormatos.classList.add("hidden");
+      } else {
+        document.getElementById("card-format-pdf").classList.toggle("hidden", vis.formatPdfVisible === false);
+        document.getElementById("mockup-btn-pdf").classList.toggle("hidden", vis.formatPdfVisible === false);
+        document.getElementById("card-format-video").classList.toggle("hidden", vis.formatVideoVisible === false);
+        document.getElementById("mockup-btn-video").classList.toggle("hidden", vis.formatVideoVisible === false);
+        document.getElementById("card-format-web").classList.toggle("hidden", vis.formatWebVisible === false);
+      }
+
+      // 3. Sección de Modalidades y tarjetas individuales
+      const modSection = document.getElementById("modalidades");
+      const navMod = document.getElementById("nav-link-modalidades");
+      if (vis.showModalitiesSection === false) {
+        modSection.classList.add("hidden");
+        navMod.classList.add("hidden");
+      } else {
+        document.getElementById("card-mod-concierge").classList.toggle("hidden", vis.modalityConciergeVisible === false);
+        document.getElementById("card-mod-hibrido").classList.toggle("hidden", vis.modalityHibridoVisible === false);
+        document.getElementById("card-mod-autogestion").classList.toggle("hidden", !vis.modalityAutogestionVisible);
+      }
+
+      // Poblar selector de Modalidad en el Cotizador solo con las modalidades visibles al cliente
+      const modSelect = document.getElementById("quote-modality");
+      const modOptions = [];
+      if (vis.modalityConciergeVisible !== false) {
+        modOptions.push(`<option value="Personalizado Concierge (Ustedes diseñan todo por mí)">Servicio Personalizado Concierge (Principal)</option>`);
+      }
+      if (vis.modalityHibridoVisible !== false) {
+        modOptions.push(`<option value="Híbrido (Elijo plantilla y dejo mis datos en línea)">Catálogo Híbrido (Solicitud en línea)</option>`);
+      }
+      if (vis.modalityAutogestionVisible) {
+        modOptions.push(`<option value="Autogestión Express">Express / Autogestión</option>`);
+      }
+      if (modOptions.length === 0) {
+        modOptions.push(`<option value="Atención Personalizada">Atención Personalizada</option>`);
+      }
+      modSelect.innerHTML = modOptions.join("");
+
+      // 4. Precios Públicos vs Ocultos
+      document.getElementById("ui-badge-price-pdf").textContent = showPrices ? `Desde ${formatMXN(cfg.formats.pdf.price)} MXN` : "Cotizar";
+      document.getElementById("ui-badge-price-video").textContent = showPrices ? `Desde ${formatMXN(cfg.formats.video.price)} MXN` : "Cotizar";
+      document.getElementById("ui-badge-price-web").textContent = showPrices ? `Desde ${formatMXN(cfg.formats.web_esencial.price)} MXN` : "Cotizar";
+
+      if (showPrices) {
+        document.getElementById("ui-card-price-esencial").textContent = formatMXN(cfg.formats.web_esencial.price);
+        document.getElementById("ui-btn-price-esencial").textContent = `Elegir Web Esencial (${formatMXN(cfg.formats.web_esencial.price)} MXN)`;
+        document.getElementById("ui-card-price-premium").textContent = formatMXN(cfg.formats.web_premium.price);
+        document.getElementById("ui-btn-price-premium").textContent = `Elegir Web Premium (${formatMXN(cfg.formats.web_premium.price)} MXN)`;
+        document.getElementById("ui-card-price-vip").textContent = formatMXN(cfg.formats.web_vip.price);
+        document.getElementById("ui-btn-price-vip").textContent = `Elegir VIP Diamante (${formatMXN(cfg.formats.web_vip.price)} MXN)`;
+      } else {
+        document.getElementById("price-box-esencial").innerHTML = `<span class="text-sm font-bold text-amber-800">Cotización Personalizada</span>`;
+        document.getElementById("price-box-premium").innerHTML = `<span class="text-sm font-bold text-amber-800">Cotización Personalizada</span>`;
+        document.getElementById("price-box-vip").innerHTML = `<span class="text-sm font-bold text-amber-400">Cotización Personalizada</span>`;
+        document.getElementById("ui-prices-subtitle").textContent = "Elige el paquete ideal para tu evento y solicita tu cotización por WhatsApp.";
+        document.getElementById("summary-pricing-breakdown").classList.add("hidden");
+      }
+
+      if (vis.formatWebVisible === false) {
+        document.getElementById("precios").classList.add("hidden");
+        document.getElementById("nav-link-precios").classList.add("hidden");
+      }
+
+      // 5. Poblar selector de formatos en el Cotizador según lo permitido al cliente
+      const formatSelect = document.getElementById("quote-format");
+      const fmtOptions = [];
+      if (vis.formatPdfVisible !== false) {
+        fmtOptions.push(`<option value="pdf">${cfg.formats.pdf.name}${showPrices ? ' — ' + formatMXN(cfg.formats.pdf.price) + ' MXN' : ''}</option>`);
+      }
+      if (vis.formatVideoVisible !== false) {
+        fmtOptions.push(`<option value="video">${cfg.formats.video.name}${showPrices ? ' — ' + formatMXN(cfg.formats.video.price) + ' MXN' : ''}</option>`);
+      }
+      if (vis.formatWebVisible !== false) {
+        fmtOptions.push(`<option value="web_esencial">${cfg.formats.web_esencial.name}${showPrices ? ' — ' + formatMXN(cfg.formats.web_esencial.price) + ' MXN' : ''}</option>`);
+        fmtOptions.push(`<option value="web_premium" selected>${cfg.formats.web_premium.name}${showPrices ? ' — ' + formatMXN(cfg.formats.web_premium.price) + ' MXN' : ''}</option>`);
+        fmtOptions.push(`<option value="web_vip">${cfg.formats.web_vip.name}${showPrices ? ' — ' + formatMXN(cfg.formats.web_vip.price) + ' MXN' : ''}</option>`);
+      }
+      formatSelect.innerHTML = fmtOptions.join("");
+
+      // 6. Poblar Extras visibles para el cliente en el Cotizador
+      const visibleExtras = cfg.extras.filter(ex => ex.visibleToClient !== false);
+      const extrasContainer = document.getElementById("quote-extras-container");
+      if (visibleExtras.length === 0) {
+        document.getElementById("quote-extras-wrapper").classList.add("hidden");
+      } else {
+        document.getElementById("quote-extras-wrapper").classList.remove("hidden");
+        extrasContainer.innerHTML = visibleExtras.map(ex => `
+          <label class="flex items-center justify-between p-3 rounded-xl bg-white border border-stone-200 cursor-pointer hover:border-amber-600 transition">
+            <div class="flex items-center gap-3">
+              <input type="checkbox" class="quote-extra accent-amber-700 w-4 h-4" value="${ex.price}" data-name="${ex.name}" data-vip="${ex.includedInVip ? '1' : '0'}" onchange="recalculateQuote()" />
+              <span class="text-xs sm:text-sm font-medium text-stone-800">${ex.name} ${ex.includedInVip ? '<span class="text-[11px] text-stone-400">(Incluido en VIP)</span>' : ''}</span>
+            </div>
+            <span class="text-xs font-bold text-amber-800">${showPrices ? '+' + formatMXN(ex.price) + ' MXN' : 'Opcional'}</span>
+          </label>
+        `).join("");
+      }
+
+      // 7. Sección Catálogo y Cotizador
+      if (vis.showCatalogSection === false) {
+        document.getElementById("catalogo").classList.add("hidden");
+        document.getElementById("nav-link-catalogo").classList.add("hidden");
+        document.getElementById("hero-btn-catalogo").classList.add("hidden");
+      }
+      if (vis.showQuoterSection === false) {
+        document.getElementById("cotizador").classList.add("hidden");
+        document.getElementById("nav-link-cotizador").classList.add("hidden");
+      }
+
+      const enabledKeys = Object.keys(presets).filter(k => presets[k].enabled !== false);
+      const eventTypeSelect = document.getElementById("quote-event-type");
+      eventTypeSelect.innerHTML = enabledKeys.map(k => `<option value="${presets[k].categoryLabel}">${presets[k].categoryLabel} (${presets[k].badgeText})</option>`).join("") + `<option value="Otro Evento Especial">Otro Evento Especial</option>`;
+
+      document.getElementById("ui-hero-events-pill").textContent = enabledKeys.map(k => presets[k].categoryLabel).slice(0, 6).join(" • ");
+
+      renderCatalog(presets, enabledKeys, vis, canSeeGenerator);
+      recalculateQuote();
+    }
+
+    function renderCatalog(presets, enabledKeys, vis, canSeeGenerator) {
+      const grid = document.getElementById("catalog-grid");
+      grid.innerHTML = enabledKeys.map(key => {
+        const item = presets[key];
+        return `
+          <div class="rounded-3xl bg-white border border-stone-200 overflow-hidden shadow-sm hover:shadow-xl transition flex flex-col justify-between group">
+            <div>
+              <div class="relative h-60 overflow-hidden">
+                <img src="${item.heroImage}" alt="${item.categoryLabel}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent flex flex-col justify-end p-6 text-white">
+                  <span class="text-[10px] uppercase tracking-widest text-amber-300 font-bold">${item.badgeText}</span>
+                  <h3 class="font-serif-luxury text-3xl font-bold leading-tight mt-0.5">${item.categoryLabel}</h3>
+                  <p class="font-script text-2xl text-amber-100">${item.title}</p>
+                </div>
+              </div>
+              <div class="p-6">
+                <p class="text-xs text-stone-500 line-clamp-2">${item.subtitle}</p>
+                <div class="mt-4 flex flex-wrap gap-1.5">
+                  <span class="px-2.5 py-1 rounded-md bg-stone-100 text-stone-700 text-[11px] font-medium"><i class="fa-solid fa-music text-amber-700 mr-1"></i>Música</span>
+                  <span class="px-2.5 py-1 rounded-md bg-stone-100 text-stone-700 text-[11px] font-medium"><i class="fa-solid fa-location-dot text-amber-700 mr-1"></i>Maps GPS</span>
+                  <span class="px-2.5 py-1 rounded-md bg-stone-100 text-stone-700 text-[11px] font-medium"><i class="fa-solid fa-ticket text-amber-700 mr-1"></i>Pases VIP</span>
+                  <span class="px-2.5 py-1 rounded-md bg-stone-100 text-stone-700 text-[11px] font-medium"><i class="fa-brands fa-whatsapp text-emerald-600 mr-1"></i>RSVP</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="px-6 pb-6 pt-3 border-t border-stone-100 space-y-2">
+              <p class="text-[11px] font-bold uppercase tracking-wider text-stone-400">Ver demostración en vivo:</p>
+              <div class="flex gap-2">
+                ${vis.formatWebVisible !== false ? `
+                  <a href="invitacion.html?demo=${item.id}&formato=web&invitado=Familia+Invitada&pases=4" class="flex-1 py-2.5 px-2 rounded-xl bg-amber-700 hover:bg-amber-800 text-white text-xs font-semibold text-center transition">
+                    <i class="fa-solid fa-globe mr-1"></i> Web
+                  </a>
+                ` : ''}
+                ${vis.formatVideoVisible !== false ? `
+                  <a href="invitacion.html?demo=${item.id}&formato=video" class="flex-1 py-2.5 px-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold text-center transition">
+                    <i class="fa-solid fa-film text-rose-700 mr-1"></i> Video
+                  </a>
+                ` : ''}
+                ${vis.formatPdfVisible !== false ? `
+                  <a href="invitacion.html?demo=${item.id}&formato=pdf" class="flex-1 py-2.5 px-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold text-center transition">
+                    <i class="fa-solid fa-file-pdf text-amber-700 mr-1"></i> PDF
+                  </a>
+                ` : ''}
+              </div>
+              ${canSeeGenerator ? `
+                <a href="generador.html?plantilla=${item.id}" class="block w-full py-2 text-center text-xs font-semibold text-amber-800 hover:text-amber-900 hover:underline pt-1">
+                  <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Editar plantilla en el Generador →
+                </a>
+              ` : `
+                <button onclick="selectEventInQuoter('${item.categoryLabel}')" class="block w-full py-2 text-center text-xs font-semibold text-amber-800 hover:text-amber-900 hover:underline pt-1">
+                  Solicitar este diseño para mi evento →
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function selectEventInQuoter(categoryLabel) {
+      const evSelect = document.getElementById("quote-event-type");
+      for (let i = 0; i < evSelect.options.length; i++) {
+        if (evSelect.options[i].value === categoryLabel) {
+          evSelect.selectedIndex = i;
+          break;
+        }
+      }
+      document.getElementById("cotizador").scrollIntoView({ behavior: "smooth" });
+    }
+
+    function selectFormatInQuoter(formatId) {
+      const select = document.getElementById("quote-format");
+      select.value = formatId;
+      recalculateQuote();
+      document.getElementById("cotizador").scrollIntoView({ behavior: "smooth" });
+    }
+
+    function setModalityInQuoter(modalityValue) {
+      const select = document.getElementById("quote-modality");
+      select.value = modalityValue;
+    }
+
+    function recalculateQuote() {
+      const cfg = window.getBusinessConfig();
+      const showPrices = cfg.clientVisibility.showPublicPrices !== false;
+      const formatId = document.getElementById("quote-format").value || "web_premium";
+      const formatObj = cfg.formats[formatId] || cfg.formats.web_premium;
+      const checkboxes = document.querySelectorAll(".quote-extra");
+
+      let extrasTotal = 0;
+      checkboxes.forEach(cb => {
+        if (formatId === "web_vip" && cb.dataset.vip === "1") {
+          cb.checked = false;
+          cb.disabled = true;
+        } else {
+          cb.disabled = false;
+          if (cb.checked) {
+            extrasTotal += Number(cb.value);
+          }
+        }
+      });
+
+      const total = formatObj.price + extrasTotal;
+
+      document.getElementById("summary-package-name").textContent = formatObj.name;
+      document.getElementById("summary-package-desc").textContent = formatObj.description;
+
+      if (showPrices) {
+        document.getElementById("summary-base-price").textContent = formatMXN(formatObj.price) + " MXN";
+        document.getElementById("summary-extras-price").textContent = formatMXN(extrasTotal) + " MXN";
+        document.getElementById("summary-total-price").textContent = formatMXN(total);
+        document.getElementById("summary-currency-label").textContent = "MXN";
+      } else {
+        document.getElementById("summary-total-price").textContent = "Por Cotizar";
+        document.getElementById("summary-currency-label").textContent = "";
+      }
+    }
+
+    function sendQuoteViaWhatsapp() {
+      const cfg = window.getBusinessConfig();
+      const showPrices = cfg.clientVisibility.showPublicPrices !== false;
+      const eventType = document.getElementById("quote-event-type").value;
+      const modality = document.getElementById("quote-modality").value;
+      const formatId = document.getElementById("quote-format").value || "web_premium";
+      const formatObj = cfg.formats[formatId] || cfg.formats.web_premium;
+      const clientName = document.getElementById("quote-client-name").value.trim() || "Cliente interesado";
+      const eventDate = document.getElementById("quote-event-date").value || "Por definir";
+      const notes = document.getElementById("quote-event-notes").value.trim() || "Sin notas adicionales";
+
+      const selectedExtras = [];
+      let extrasTotal = 0;
+      document.querySelectorAll(".quote-extra:checked").forEach(cb => {
+        selectedExtras.push(cb.dataset.name);
+        extrasTotal += Number(cb.value);
+      });
+
+      const total = formatObj.price + extrasTotal;
+
+      // Registrar automáticamente la cotización en el Gestor CRM de Clientes
+      try {
+        window.upsertClientOrder({
+          id: "cli_" + Date.now().toString().slice(-6),
+          createdAt: new Date().toISOString().slice(0, 10),
+          clientName: clientName,
+          clientPhone: "",
+          eventType: eventType,
+          eventTitle: notes !== "Sin notas adicionales" ? notes : eventType,
+          eventDate: eventDate !== "Por definir" ? eventDate : "",
+          packageName: formatObj.name,
+          modality: modality,
+          totalAmount: total,
+          paidAmount: 0,
+          status: "Cotizado",
+          presetBase: "boda",
+          vipGuestsRaw: "Familia Invitada, 4",
+          invitationData: null
+        });
+      } catch (e) {}
+
+      const message = [
+        `¡Hola *${cfg.brandName}*! 👋 Me gustaría solicitar una invitación digital:`,
+        ``,
+        `👤 *Nombre:* ${clientName}`,
+        `🎉 *Tipo de Evento:* ${eventType}`,
+        `📅 *Fecha del Evento:* ${eventDate}`,
+        `🤝 *Modalidad preferida:* ${modality}`,
+        `💎 *Formato / Paquete:* ${formatObj.name}${showPrices ? ' (' + formatMXN(formatObj.price) + ' MXN)' : ''}`,
+        `✨ *Complementos:* ${selectedExtras.length ? selectedExtras.join(", ") : "Ninguno"}`,
+        `📝 *Festejados / Notas:* ${notes}`,
+        showPrices ? `💰 *Total Cotizado:* *${formatMXN(total)} MXN*` : ``,
+        ``,
+        `¿Me pueden indicar los pasos para comenzar?`
+      ].filter(Boolean).join("\n");
+
+      const waUrl = `https://wa.me/${cfg.whatsappNumber}?text=${encodeURIComponent(message)}`;
+      window.open(waUrl, "_blank");
+    }
+
+    document.addEventListener("DOMContentLoaded", applyDynamicBusinessUI);
+  </script>
+</body>
+</html>

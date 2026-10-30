@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel de Administrador | CRM Clientes, Permisos, Marca y Precios</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="bg-stone-100 text-stone-800 antialiased">
+
+  <!-- PANTALLA DE LOGIN DE PERFIL ADMIN -->
+  <div id="admin-login-overlay" class="hidden fixed inset-0 z-50 bg-stone-950 flex items-center justify-center p-4">
+    <div class="max-w-md w-full bg-white rounded-3xl p-8 shadow-2xl border border-stone-200">
+      <div class="text-center mb-6">
+        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-600 to-stone-900 text-white flex items-center justify-center text-2xl mx-auto shadow-lg mb-3">
+          <i class="fa-solid fa-user-shield"></i>
+        </div>
+        <span class="text-[11px] font-bold uppercase tracking-widest text-amber-700">Acceso Exclusivo Propietario</span>
+        <h1 class="font-serif-luxury text-3xl font-bold text-stone-900 mt-1">Perfil Administrador</h1>
+        <p class="text-xs text-stone-500 mt-1">Ingresa tus credenciales para administrar clientes, ventas y permisos del sitio.</p>
+      </div>
+
+      <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase text-stone-700 mb-1">Usuario Admin</label>
+          <input type="text" id="login-username" value="admin" required class="w-full rounded-xl border border-stone-300 px-3.5 py-2.5 text-sm font-semibold focus:outline-none focus:border-amber-700" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-stone-700 mb-1">PIN / Contraseña</label>
+          <input type="password" id="login-pin" placeholder="••••" required class="w-full rounded-xl border border-stone-300 px-3.5 py-2.5 text-sm font-mono focus:outline-none focus:border-amber-700" />
+        </div>
+
+        <p id="login-error" class="hidden text-xs font-semibold text-rose-600 bg-rose-50 p-2.5 rounded-xl border border-rose-200 text-center">
+          Usuario o PIN incorrecto. Intenta nuevamente.
+        </p>
+
+        <div class="p-3 rounded-xl bg-stone-100 border border-stone-200 text-[11px] text-stone-600 text-center">
+          <i class="fa-solid fa-shield-halved text-amber-700 mr-1"></i>
+          Protección activa mediante huella criptográfica <strong>SHA-256</strong>.
+        </div>
+
+        <button type="submit" class="w-full py-3.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-bold text-sm shadow-lg transition">
+          <i class="fa-solid fa-unlock-keyhole mr-1.5 text-amber-400"></i> Entrar a mi Panel Admin
+        </button>
+
+        <a href="index.html" class="block text-center text-xs text-stone-500 hover:text-stone-800 pt-2">
+          ← Volver a la vista pública de clientes
+        </a>
+      </form>
+    </div>
+  </div>
+
+  <!-- Barra Superior del Panel Admin -->
+  <header class="bg-stone-900 text-white border-b border-stone-700 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-amber-600 flex items-center justify-center text-white font-bold">
+          <i class="fa-solid fa-user-shield"></i>
+        </div>
+        <div>
+          <span class="font-serif-luxury text-xl font-bold text-amber-400" id="header-admin-name">Mi Panel Admin</span>
+          <span class="hidden md:inline text-[11px] text-stone-400 ml-2">CRM de Clientes • Ingresos MXN • Visibilidad • Catálogo</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button onclick="previewSiteAsClient()" class="px-3 py-1.5 rounded-lg bg-sky-700 hover:bg-sky-600 text-xs font-semibold text-white transition" title="Ver el sitio exactamente como lo ve un cliente sin sesión">
+          <i class="fa-solid fa-eye mr-1"></i> Ver Sitio como Cliente
+        </button>
+        <a href="index.html" class="px-3 py-1.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-xs font-semibold text-stone-200 border border-stone-700 transition">
+          <i class="fa-solid fa-globe mr-1 text-amber-400"></i> Catálogo
+        </a>
+        <a href="generador.html" class="hidden sm:inline-flex px-3 py-1.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-xs font-semibold text-stone-200 border border-stone-700 transition">
+          <i class="fa-solid fa-wand-magic-sparkles text-amber-400 mr-1"></i> Generador
+        </a>
+        <button onclick="saveAllSettings()" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white shadow flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-floppy-disk"></i> Guardar Cambios
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Notificación Toast -->
+  <div id="save-toast" class="hidden fixed bottom-6 right-6 z-50 bg-emerald-700 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 text-sm font-semibold">
+    <i class="fa-solid fa-circle-check text-lg"></i>
+    <span id="save-toast-text">¡Cambios guardados en tu perfil Admin!</span>
+  </div>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8 pb-24">
+
+    <!-- ======================================================================= -->
+    <!-- SECCIÓN 0 (NUEVA): GESTOR DE CLIENTES, PEDIDOS E INGRESOS (CRM MXN)     -->
+    <!-- ======================================================================= -->
+    <section class="bg-white rounded-3xl border-2 border-emerald-600/80 p-6 sm:p-8 shadow-md">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-stone-200 pb-4 mb-6">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-xl shadow">
+            <i class="fa-solid fa-users-gear"></i>
+          </div>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-widest text-emerald-700">CRM y Control de Ventas en MXN</span>
+            <h2 class="font-serif-luxury text-2xl sm:text-3xl font-bold text-stone-900">
+              Gestor de Clientes, Pedidos e Ingresos
+            </h2>
+            <p class="text-xs text-stone-500">
+              Administra tus pedidos reales, lleva el control de anticipos/liquidaciones en Pesos Mexicanos y abre la invitación de cada cliente en el Generador.
+            </p>
+          </div>
+        </div>
+
+        <button onclick="toggleNewOrderBox(true)" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow flex items-center gap-2 transition">
+          <i class="fa-solid fa-user-plus"></i> + Registrar Nuevo Cliente / Pedido
+        </button>
+      </div>
+
+      <!-- Tarjetas de Resumen Financiero en MXN -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="p-4 rounded-2xl bg-stone-900 text-white">
+          <span class="text-[11px] uppercase tracking-wider text-stone-400 font-bold">Total Vendido / Cotizado</span>
+          <p class="font-serif-luxury text-3xl font-bold text-amber-400 mt-1" id="crm-stat-total">$0 MXN</p>
+          <span class="text-[11px] text-stone-400" id="crm-stat-count">0 pedidos registrados</span>
+        </div>
+        <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200">
+          <span class="text-[11px] uppercase tracking-wider text-emerald-800 font-bold">Ingresos Cobrados</span>
+          <p class="font-serif-luxury text-3xl font-bold text-emerald-700 mt-1" id="crm-stat-paid">$0 MXN</p>
+          <span class="text-[11px] text-emerald-600">Anticipos + Liquidaciones</span>
+        </div>
+        <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200">
+          <span class="text-[11px] uppercase tracking-wider text-amber-800 font-bold">Saldo por Cobrar</span>
+          <p class="font-serif-luxury text-3xl font-bold text-amber-800 mt-1" id="crm-stat-pending">$0 MXN</p>
+          <span class="text-[11px] text-amber-700">Pendiente de liquidar</span>
+        </div>
+        <div class="p-4 rounded-2xl bg-stone-50 border border-stone-200">
+          <span class="text-[11px] uppercase tracking-wider text-stone-600 font-bold">Entregados / En Diseño</span>
+          <p class="font-serif-luxury text-3xl font-bold text-stone-900 mt-1" id="crm-stat-delivered">0 / 0</p>
+          <span class="text-[11px] text-stone-500">Flujo de producción</span>
+        </div>
+      </div>
+
+      <!-- Formulario para Registrar Nuevo Cliente / Pedido -->
+      <div id="new-order-box" class="hidden mb-6 p-6 rounded-2xl bg-emerald-50/70 border border-emerald-300 space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="font-serif-luxury text-2xl font-bold text-stone-900">Registrar Nuevo Cliente / Pedido</h3>
+          <button onclick="toggleNewOrderBox(false)" class="text-xs font-bold text-stone-500 hover:text-stone-800">Cerrar ✕</button>
+        </div>
+
+        <div class="grid sm:grid-cols-4 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase text-stone-700 mb-1">Nombre del Cliente</label>
+            <input type="text" id="ord-clientName" placeholder="Ej. Laura Hernández" class="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-stone-700 mb-1">WhatsApp del Cliente</label>
+            <input type="text" id="ord-clientPhone" placeholder="Ej. 5215512345678" class="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm font-mono" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-stone-700 mb-1">Plantilla / Tipo de Evento</label>
+            <select id="ord-presetBase" class="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm">
+              <!-- Se puebla dinámicamente -->
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-stone-700 mb-1">Festejados (Título)</label>
+            <input type="text" id="ord-eventTitle" placeholder="Ej. Laura & Daniel" class="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm font-bold" />
+          </div>
+        </div>
+
+        <div class="grid sm:grid-cols-5 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase text-stone-700 mb-1">Fecha del Evento</label>
+            <input type="date" id="ord-eventDate" class="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-stone-700 mb-1">Paquete Contratado</label>
+            <select id="ord-package" onchange="autoFillOrderPrice()" class="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm">
+              <option value="web_vip" data-price="2290">Web VIP Diamante ($2,290)</option>
+              <option value="web_premium" data-price="1490" selected>Web Premium ($1,490)</option>
+              <option value="web_esencial" data-price="890">Web Esencial ($890)</option>
+              <option value="video" data-price="790">Video Animado HD ($790)</option>
+              <option value="pdf" data-price="490">PDF Interactivo ($490)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-stone-700 mb-1">Total ($ MXN)</label>
+            <input type="number" id="ord-totalAmount" value="1490" class="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm font-bold" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-stone-700 mb-1">Anticipo Pagado ($ MXN)</label>
+            <input type="number" id="ord-paidAmount" value="745" class="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm font-bold text-emerald-700" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-stone-700 mb-1">Estatus Inicial</label>
+            <select id="ord-status" class="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm font-semibold">
+              <option value="Cotizado">Cotizado</option>
+              <option value="Anticipo 50% pagado" selected>Anticipo 50% pagado</option>
+              <option value="En diseño">En diseño</option>
+              <option value="Entregado">Entregado</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-2">
+          <button onclick="createNewClientOrder()" class="px-5 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold shadow transition">
+            <i class="fa-solid fa-check mr-1 text-emerald-400"></i> Guardar Pedido y Crear Invitación del Cliente
+          </button>
+        </div>
+      </div>
+
+      <!-- Tabla de Clientes y Pedidos -->
+      <div class="overflow-x-auto border border-stone-200 rounded-2xl">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="bg-stone-100 text-stone-600 uppercase border-b border-stone-200">
+              <th class="py-3 px-4">Cliente & Evento</th>
+              <th class="py-3 px-3">Paquete</th>
+              <th class="py-3 px-3">Estatus del Pedido</th>
+              <th class="py-3 px-3">Finanzas (MXN)</th>
+              <th class="py-3 px-4 text-right">Acciones / Diseñar</th>
+            </tr>
+          </thead>
+          <tbody id="crm-orders-tbody" class="divide-y divide-stone-200 bg-white">
+            <!-- Se llena dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- SECCIÓN 1: CLASIFICACIÓN DE LO QUE PUEDE Y NO PUEDE VER EL CLIENTE       -->
+    <!-- ======================================================================= -->
+    <section class="bg-white rounded-3xl border-2 border-amber-500/80 p-6 sm:p-8 shadow-md">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-stone-200 pb-4 mb-6">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-amber-600 text-white flex items-center justify-center text-xl shadow">
+            <i class="fa-solid fa-eye-low-vision"></i>
+          </div>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-widest text-amber-700">Control Maestro del Cliente</span>
+            <h2 class="font-serif-luxury text-2xl sm:text-3xl font-bold text-stone-900">
+              1. ¿Qué puede y qué NO puede ver el cliente?
+            </h2>
+            <p class="text-xs text-stone-500">
+              Clasifica qué formatos, modalidades, secciones y herramientas son visibles para los visitantes y cuáles son exclusivas para ti como Admin.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex gap-2">
+          <button onclick="applyQuickVisibilityPreset('concierge')" class="px-3 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs font-bold transition">
+            Modo Agencia Concierge (Recomendado)
+          </button>
+          <button onclick="applyQuickVisibilityPreset('all')" class="px-3 py-1.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold transition">
+            Mostrar Todo al Cliente
+          </button>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6">
+        <!-- Bloque A: Formatos que ve el cliente -->
+        <div class="p-5 rounded-2xl bg-stone-50 border border-stone-200 space-y-3.5">
+          <div class="flex items-center justify-between border-b border-stone-200 pb-2.5">
+            <h3 class="font-serif-luxury text-xl font-bold text-stone-900">
+              <i class="fa-solid fa-shapes text-amber-700 mr-1.5"></i> A. Formatos Visibles
+            </h3>
+            <label class="flex items-center gap-1.5 text-xs font-bold text-stone-600 cursor-pointer">
+              <input type="checkbox" id="vis-showFormatsSection" onchange="saveAllSettings(true)" class="accent-amber-700 w-4 h-4" />
+              Sección Activa
+            </label>
+          </div>
+          <p class="text-[11px] text-stone-500">Elige cuáles de los 3 formatos puede ver y cotizar el cliente:</p>
+
+          <label class="flex items-center justify-between p-3 rounded-xl bg-white border border-stone-200 cursor-pointer hover:border-amber-600">
+            <div>
+              <span class="text-xs font-bold text-stone-900 block">1. Imagen / PDF Interactivo</span>
+              <span class="text-[11px] text-stone-500">Tarjeta vertical con links</span>
+            </div>
+            <input type="checkbox" id="vis-formatPdfVisible" onchange="saveAllSettings(true)" class="accent-emerald-600 w-5 h-5" />
+          </label>
+
+          <label class="flex items-center justify-between p-3 rounded-xl bg-white border border-stone-200 cursor-pointer hover:border-amber-600">
+            <div>
+              <span class="text-xs font-bold text-stone-900 block">2. Video-Invitación HD</span>
+              <span class="text-[11px] text-stone-500">Video animado 9:16</span>
+            </div>
+            <input type="checkbox" id="vis-formatVideoVisible" onchange="saveAllSettings(true)" class="accent-emerald-600 w-5 h-5" />
+          </label>
+
+          <label class="flex items-center justify-between p-3 rounded-xl bg-white border border-stone-200 cursor-pointer hover:border-amber-600">
+            <div>
+              <span class="text-xs font-bold text-stone-900 block">3. Invitación Web Interactiva</span>
+              <span class="text-[11px] text-stone-500">Producto Estrella (Esencial/Premium/VIP)</span>
+            </div>
+            <input type="checkbox" id="vis-formatWebVisible" onchange="saveAllSettings(true)" class="accent-emerald-600 w-5 h-5" />
+          </label>
+        </div>
+
+        <!-- Bloque B: Modalidades de Trabajo y Generador -->
+        <div class="p-5 rounded-2xl bg-stone-50 border border-stone-200 space-y-3.5">
+          <div class="flex items-center justify-between border-b border-stone-200 pb-2.5">
+            <h3 class="font-serif-luxury text-xl font-bold text-stone-900">
+              <i class="fa-solid fa-handshake text-amber-700 mr-1.5"></i> B. Modalidades y Estudio
+            </h3>
+            <label class="flex items-center gap-1.5 text-xs font-bold text-stone-600 cursor-pointer">
+              <input type="checkbox" id="vis-showModalitiesSection" onchange="saveAllSettings(true)" class="accent-amber-700 w-4 h-4" />
+              Sección Activa
+            </label>
+          </div>
+          <p class="text-[11px] text-stone-500">Elige qué modalidades de servicio ofreces al público:</p>
+
+          <label class="flex items-center justify-between p-3 rounded-xl bg-white border border-stone-200 cursor-pointer hover:border-amber-600">
+            <div>
+              <span class="text-xs font-bold text-stone-900 block">1. Servicio Personalizado (Principal)</span>
+              <span class="text-[11px] text-stone-500">Tú diseñas todo por el cliente</span>
+            </div>
+            <input type="checkbox" id="vis-modalityConciergeVisible" onchange="saveAllSettings(true)" class="accent-emerald-600 w-5 h-5" />
+          </label>
+
+          <label class="flex items-center justify-between p-3 rounded-xl bg-white border border-stone-200 cursor-pointer hover:border-amber-600">
+            <div>
+              <span class="text-xs font-bold text-stone-900 block">2. Catálogo Híbrido</span>
+              <span class="text-[11px] text-stone-500">Elige plantilla y deja datos en línea</span>
+            </div>
+            <input type="checkbox" id="vis-modalityHibridoVisible" onchange="saveAllSettings(true)" class="accent-emerald-600 w-5 h-5" />
+          </label>
+
+          <label class="flex items-center justify-between p-3 rounded-xl bg-white border border-stone-200 cursor-pointer hover:border-amber-600">
+            <div>
+              <span class="text-xs font-bold text-stone-900 block">3. Modalidad Autogestión Express</span>
+              <span class="text-[11px] text-stone-500">Mostrar tarjeta de autogestión</span>
+            </div>
+            <input type="checkbox" id="vis-modalityAutogestionVisible" onchange="saveAllSettings(true)" class="accent-emerald-600 w-5 h-5" />
+          </label>
+
+          <label class="flex items-center justify-between p-3 rounded-xl bg-amber-50 border border-amber-300 cursor-pointer">
+            <div>
+              <span class="text-xs font-bold text-amber-950 block"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Permitir al Cliente usar el Generador</span>
+              <span class="text-[10px] text-amber-800">Si se desactiva, el Generador es 100% exclusivo para ti (Admin)</span>
+            </div>
+            <input type="checkbox" id="vis-allowClientGenerator" onchange="saveAllSettings(true)" class="accent-amber-700 w-5 h-5" />
+          </label>
+        </div>
+
+        <!-- Bloque C: Secciones de Página, Precios y Demos -->
+        <div class="p-5 rounded-2xl bg-stone-50 border border-stone-200 space-y-3.5">
+          <div class="border-b border-stone-200 pb-2.5">
+            <h3 class="font-serif-luxury text-xl font-bold text-stone-900">
+              <i class="fa-solid fa-sliders text-amber-700 mr-1.5"></i> C. Secciones y Precios
+            </h3>
+          </div>
+          <p class="text-[11px] text-stone-500">Configura qué información comercial ve el visitante:</p>
+
+          <label class="flex items-center justify-between p-3 rounded-xl bg-white border border-stone-200 cursor-pointer hover:border-amber-600">
+            <div>
+              <span class="text-xs font-bold text-stone-900 block">Mostrar Precios en MXN al Público</span>
+              <span class="text-[10px] text-stone-500">Si lo apagas, oculta los montos $ y pide cotizar por WhatsApp</span>
+            </div>
+            <input type="checkbox" id="vis-showPublicPrices" onchange="saveAllSettings(true)" class="accent-emerald-600 w-5 h-5" />
+          </label>
+
+          <label class="flex items-center justify-between p-3 rounded-xl bg-white border border-stone-200 cursor-pointer hover:border-amber-600">
+            <div>
+              <span class="text-xs font-bold text-stone-900 block">Mostrar Barra de Promoción Superior</span>
+              <span class="text-[10px] text-stone-500">Aviso promocional arriba del menú</span>
+            </div>
+            <input type="checkbox" id="vis-showPromoBanner" onchange="saveAllSettings(true)" class="accent-emerald-600 w-5 h-5" />
+          </label>
+
+          <label class="flex items-center justify-between p-3 rounded-xl bg-white border border-stone-200 cursor-pointer hover:border-amber-600">
+            <div>
+              <span class="text-xs font-bold text-stone-900 block">Mostrar Catálogo de Demos</span>
+              <span class="text-[10px] text-stone-500">Galería de plantillas por evento</span>
+            </div>
+            <input type="checkbox" id="vis-showCatalogSection" onchange="saveAllSettings(true)" class="accent-emerald-600 w-5 h-5" />
+          </label>
+
+          <label class="flex items-center justify-between p-3 rounded-xl bg-white border border-stone-200 cursor-pointer hover:border-amber-600">
+            <div>
+              <span class="text-xs font-bold text-stone-900 block">Mostrar Cotizador Interactivo</span>
+              <span class="text-[10px] text-stone-500">Formulario de pedido al final de la web</span>
+            </div>
+            <input type="checkbox" id="vis-showQuoterSection" onchange="saveAllSettings(true)" class="accent-emerald-600 w-5 h-5" />
+          </label>
+
+          <label class="flex items-center justify-between p-3 rounded-xl bg-white border border-stone-200 cursor-pointer hover:border-amber-600">
+            <div>
+              <span class="text-xs font-bold text-stone-900 block">Barra de Formatos en Demos</span>
+              <span class="text-[10px] text-stone-500">Permite al cliente alternar Web/Video/PDF en los demos</span>
+            </div>
+            <input type="checkbox" id="vis-showFormatSwitcherInDemo" onchange="saveAllSettings(true)" class="accent-emerald-600 w-5 h-5" />
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- SECCIÓN 2: TIPOS DE EVENTOS QUE PUEDE VER EL CLIENTE EN EL CATÁLOGO     -->
+    <!-- ======================================================================= -->
+    <section class="bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-sm">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-stone-200 pb-4 mb-6">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-800 flex items-center justify-center text-lg">
+            <i class="fa-solid fa-layer-group"></i>
+          </div>
+          <div>
+            <h2 class="font-serif-luxury text-2xl font-bold text-stone-900">2. Eventos Visibles para el Cliente en el Catálogo</h2>
+            <p class="text-xs text-stone-500">Enciende o apaga qué tipos de eventos puede ver el cliente, edita sus plantillas o crea nuevas categorías.</p>
+          </div>
+        </div>
+
+        <button onclick="toggleNewEventModal(true)" class="px-4 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 text-white text-xs font-bold shadow flex items-center gap-2 transition">
+          <i class="fa-solid fa-plus"></i> Agregar Nuevo Tipo de Evento
+        </button>
+      </div>
+
+      <!-- Modal para agregar un nuevo tipo de evento -->
+      <div id="new-event-box" class="hidden mb-8 p-6 rounded-2xl bg-amber-50/70 border border-amber-300 space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="font-serif-luxury text-2xl font-bold text-stone-900">Crear Nuevo Tipo de Evento para el Catálogo</h3>
+          <button onclick="toggleNewEventModal(false)" class="text-xs font-bold text-stone-500 hover:text-stone-800">Cerrar ✕</button>
+        </div>
+
+        <div class="grid sm:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase text-stone-700 mb-1">Nombre del Evento (Categoría)</label>
+            <input type="text" id="new-ev-category" placeholder="Ej. Primera Comunión" class="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-stone-700 mb-1">Etiqueta Superior</label>
+            <input type="text" id="new-ev-badge" placeholder="Ej. Mi Primera Comunión" class="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-stone-700 mb-1">Nombre del Festejado(a) Demo</label>
+            <input type="text" id="new-ev-title" placeholder="Ej. Sofía Valentina" class="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm" />
+          </div>
+        </div>
+
+        <div class="grid sm:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase text-stone-700 mb-1">Color Principal del Tema</label>
+            <input type="color" id="new-ev-color" value="#8C6D46" class="w-full h-10 rounded-xl border border-stone-300 bg-white cursor-pointer" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-stone-700 mb-1">Melodía Musical</label>
+            <select id="new-ev-melody" class="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm">
+              <option value="romantic">Piano Romántico</option>
+              <option value="waltz">Vals de Gala</option>
+              <option value="lullaby">Dulce / Infantil</option>
+              <option value="festive">Celebración Alegre</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-stone-700 mb-1">URL de Foto de Portada</label>
+            <input type="text" id="new-ev-img" value="https://images.unsplash.com/photo-1464349153735-7db50ed83c84?auto=format&fit=crop&w=1200&q=80" class="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-xs" />
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-2">
+          <button onclick="createNewEventPreset()" class="px-5 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold shadow transition">
+            <i class="fa-solid fa-check mr-1 text-amber-400"></i> Crear y Añadir al Catálogo
+          </button>
+        </div>
+      </div>
+
+      <!-- Tarjetas de Eventos en el Admin -->
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4" id="events-admin-grid"></div>
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- SECCIÓN 3: IDENTIDAD DE MARCA Y WHATSAPP                                -->
+    <!-- ======================================================================= -->
+    <section class="bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-sm">
+      <div class="flex items-center justify-between border-b border-stone-200 pb-4 mb-6">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center text-lg">
+            <i class="fa-solid fa-store"></i>
+          </div>
+          <div>
+            <h2 class="font-serif-luxury text-2xl font-bold text-stone-900">3. Identidad de tu Marca y WhatsApp de Ventas</h2>
+            <p class="text-xs text-stone-500">Se actualiza en todo el sitio público y en el cotizador de WhatsApp.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-3 gap-5">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1">Nombre de tu Marca / Negocio</label>
+          <input type="text" id="cfg-brandName" class="w-full rounded-xl border border-stone-300 px-3.5 py-2.5 text-sm font-bold text-stone-900" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1">Eslogan o Subtítulo</label>
+          <input type="text" id="cfg-tagline" class="w-full rounded-xl border border-stone-300 px-3.5 py-2.5 text-sm" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1">Tu WhatsApp (Ej. 5215512345678)</label>
+          <input type="text" id="cfg-whatsapp" class="w-full rounded-xl border border-stone-300 px-3.5 py-2.5 text-sm font-mono" />
+        </div>
+        <div class="sm:col-span-3">
+          <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1">Texto de Barra Superior de Promoción</label>
+          <input type="text" id="cfg-promoBanner" class="w-full rounded-xl border border-stone-300 px-3.5 py-2.5 text-sm" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- SECCIÓN 4: PRECIOS EN PESOS MEXICANOS (MXN)                             -->
+    <!-- ======================================================================= -->
+    <section class="bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-sm">
+      <div class="flex items-center justify-between border-b border-stone-200 pb-4 mb-6">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-lg">
+            <i class="fa-solid fa-peso-sign"></i>
+          </div>
+          <div>
+            <h2 class="font-serif-luxury text-2xl font-bold text-stone-900">4. Precios de Paquetes y Complementos (MXN)</h2>
+            <p class="text-xs text-stone-500">Configura tus precios en Pesos Mexicanos y qué complementos puede elegir el cliente.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+        <div class="p-4 rounded-2xl bg-stone-50 border border-stone-200">
+          <label class="block text-[11px] font-bold uppercase text-stone-500">1. PDF Interactivo</label>
+          <div class="mt-2 flex items-center gap-1">
+            <span class="font-bold text-stone-500">$</span>
+            <input type="number" id="price-pdf" class="w-full rounded-lg border border-stone-300 bg-white px-2.5 py-1.5 text-base font-bold text-stone-900" />
+            <span class="text-xs font-bold text-stone-500">MXN</span>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-stone-50 border border-stone-200">
+          <label class="block text-[11px] font-bold uppercase text-stone-500">2. Video Animado HD</label>
+          <div class="mt-2 flex items-center gap-1">
+            <span class="font-bold text-stone-500">$</span>
+            <input type="number" id="price-video" class="w-full rounded-lg border border-stone-300 bg-white px-2.5 py-1.5 text-base font-bold text-stone-900" />
+            <span class="text-xs font-bold text-stone-500">MXN</span>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-stone-50 border border-stone-200">
+          <label class="block text-[11px] font-bold uppercase text-stone-500">Web Esencial</label>
+          <div class="mt-2 flex items-center gap-1">
+            <span class="font-bold text-stone-500">$</span>
+            <input type="number" id="price-web_esencial" class="w-full rounded-lg border border-stone-300 bg-white px-2.5 py-1.5 text-base font-bold text-stone-900" />
+            <span class="text-xs font-bold text-stone-500">MXN</span>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-amber-50/70 border border-amber-300">
+          <label class="block text-[11px] font-bold uppercase text-amber-800">Web Premium ★</label>
+          <div class="mt-2 flex items-center gap-1">
+            <span class="font-bold text-amber-800">$</span>
+            <input type="number" id="price-web_premium" class="w-full rounded-lg border border-amber-300 bg-white px-2.5 py-1.5 text-base font-bold text-stone-900" />
+            <span class="text-xs font-bold text-amber-800">MXN</span>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-stone-900 text-white border border-stone-800">
+          <label class="block text-[11px] font-bold uppercase text-amber-400">Web VIP Diamante</label>
+          <div class="mt-2 flex items-center gap-1">
+            <span class="font-bold text-amber-400">$</span>
+            <input type="number" id="price-web_vip" class="w-full rounded-lg border border-stone-700 bg-stone-800 px-2.5 py-1.5 text-base font-bold text-white" />
+            <span class="text-xs font-bold text-stone-400">MXN</span>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="text-xs font-bold uppercase tracking-wider text-stone-500 mb-3">Complementos Opcionales en Cotizador (Precio MXN y Visibilidad)</h3>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4" id="extras-prices-grid"></div>
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- SECCIÓN 5: MI PERFIL ADMIN (CREDENCIALES Y RESPALDO)                    -->
+    <!-- ======================================================================= -->
+    <section class="bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-sm">
+      <div class="flex items-center justify-between border-b border-stone-200 pb-4 mb-6">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-stone-900 text-amber-400 flex items-center justify-center text-lg">
+            <i class="fa-solid fa-key"></i>
+          </div>
+          <div>
+            <h2 class="font-serif-luxury text-2xl font-bold text-stone-900">5. Mi Perfil Administrador y Seguridad</h2>
+            <p class="text-xs text-stone-500">Personaliza tu nombre de propietario, tu usuario y tu PIN/contraseña para entrar al panel.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-3 gap-5 mb-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1">Tu Nombre (Propietario)</label>
+          <input type="text" id="admin-ownerName" class="w-full rounded-xl border border-stone-300 px-3.5 py-2.5 text-sm font-bold text-stone-900" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1">Usuario de Acceso</label>
+          <input type="text" id="admin-username" class="w-full rounded-xl border border-stone-300 px-3.5 py-2.5 text-sm font-mono" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1">Nueva Contraseña / PIN (Encriptación SHA-256)</label>
+          <input type="password" id="admin-pin" placeholder="Dejar vacío para conservar actual" class="w-full rounded-xl border border-stone-300 px-3.5 py-2.5 text-sm font-mono" />
+        </div>
+      </div>
+
+      <div class="p-3.5 rounded-2xl bg-stone-50 border border-stone-200 flex flex-wrap items-center justify-between gap-2 mb-6 text-xs">
+        <div class="truncate max-w-xl">
+          <span class="font-bold text-stone-700"><i class="fa-solid fa-fingerprint text-amber-700 mr-1"></i>Hash SHA-256 Activo:</span>
+          <code id="admin-current-hash" class="text-[11px] text-stone-500 ml-1"></code>
+        </div>
+        <button type="button" onclick="copyCurrentAdminHash()" class="px-3 py-1 rounded-lg bg-white border border-stone-300 hover:bg-stone-100 text-stone-700 font-semibold shrink-0">
+          <i class="fa-regular fa-copy mr-1"></i> Copiar Hash
+        </button>
+      </div>
+
+      <div class="pt-5 border-t border-stone-200 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex flex-wrap gap-3">
+          <button onclick="exportBusinessBackup()" class="px-4 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold border border-stone-300 transition">
+            <i class="fa-solid fa-download mr-1"></i> Descargar Respaldo Completo (.json)
+          </button>
+          <button onclick="confirmResetFactory()" class="px-4 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-800 text-xs font-semibold border border-rose-200 transition">
+            <i class="fa-solid fa-rotate-left mr-1"></i> Restaurar Valores de Fábrica
+          </button>
+        </div>
+
+        <button onclick="window.handleGlobalAdminLogout()" class="px-4 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-rose-300 text-xs font-bold transition">
+          <i class="fa-solid fa-right-from-bracket mr-1"></i> Cerrar Sesión Admin
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="js/data.js"></script>
+  <script>
+    let currentCfg = null;
+    let currentPresets = null;
+    let currentCreds = null;
+
+    function formatMXN(amount) {
+      return "$" + Number(amount || 0).toLocaleString("es-MX");
+    }
+
+    function checkAuthAndInit() {
+      if (window.isAdminLoggedIn()) {
+        window.setPreviewAsClient(false);
+        document.getElementById("admin-login-overlay").classList.add("hidden");
+        initConfigPage();
+        window.renderAdminFloatingBar();
+      } else {
+        document.getElementById("admin-login-overlay").classList.remove("hidden");
+      }
+    }
+
+    function handleAdminLogin(e) {
+      e.preventDefault();
+      const user = document.getElementById("login-username").value;
+      const pin = document.getElementById("login-pin").value;
+      if (window.loginAdmin(user, pin)) {
+        document.getElementById("login-error").classList.add("hidden");
+        document.getElementById("admin-login-overlay").classList.add("hidden");
+        initConfigPage();
+        window.renderAdminFloatingBar();
+      } else {
+        document.getElementById("login-error").classList.remove("hidden");
+      }
+    }
+
+    function initConfigPage() {
+      currentCfg = window.getBusinessConfig();
+      currentPresets = window.getEventPresets();
+      currentCreds = window.getAdminCredentials();
+
+      document.getElementById("header-admin-name").textContent = `Admin: ${currentCreds.ownerName}`;
+
+      // Poblar selector de plantillas en Nuevo Pedido CRM
+      const ordPresetSel = document.getElementById("ord-presetBase");
+      ordPresetSel.innerHTML = Object.keys(currentPresets).map(k => `<option value="${k}">${currentPresets[k].categoryLabel}</option>`).join("");
+
+      renderCrmOrders();
+
+      // 1. Cargar Interruptores de Visibilidad del Cliente
+      const vis = currentCfg.clientVisibility;
+      document.getElementById("vis-showFormatsSection").checked = vis.showFormatsSection !== false;
+      document.getElementById("vis-formatPdfVisible").checked = vis.formatPdfVisible !== false;
+      document.getElementById("vis-formatVideoVisible").checked = vis.formatVideoVisible !== false;
+      document.getElementById("vis-formatWebVisible").checked = vis.formatWebVisible !== false;
+
+      document.getElementById("vis-showModalitiesSection").checked = vis.showModalitiesSection !== false;
+      document.getElementById("vis-modalityConciergeVisible").checked = vis.modalityConciergeVisible !== false;
+      document.getElementById("vis-modalityHibridoVisible").checked = vis.modalityHibridoVisible !== false;
+      document.getElementById("vis-modalityAutogestionVisible").checked = Boolean(vis.modalityAutogestionVisible);
+      document.getElementById("vis-allowClientGenerator").checked = Boolean(vis.allowClientGenerator);
+
+      document.getElementById("vis-showPublicPrices").checked = vis.showPublicPrices !== false;
+      document.getElementById("vis-showPromoBanner").checked = vis.showPromoBanner !== false;
+      document.getElementById("vis-showCatalogSection").checked = vis.showCatalogSection !== false;
+      document.getElementById("vis-showQuoterSection").checked = vis.showQuoterSection !== false;
+      document.getElementById("vis-showFormatSwitcherInDemo").checked = vis.showFormatSwitcherInDemo !== false;
+
+      // 2. Cargar Marca y Contacto
+      document.getElementById("cfg-brandName").value = currentCfg.brandName;
+      document.getElementById("cfg-tagline").value = currentCfg.tagline;
+      document.getElementById("cfg-whatsapp").value = currentCfg.whatsappNumber;
+      document.getElementById("cfg-promoBanner").value = currentCfg.promoBanner || "";
+
+      // 3. Cargar Precios MXN
+      document.getElementById("price-pdf").value = currentCfg.formats.pdf.price;
+      document.getElementById("price-video").value = currentCfg.formats.video.price;
+      document.getElementById("price-web_esencial").value = currentCfg.formats.web_esencial.price;
+      document.getElementById("price-web_premium").value = currentCfg.formats.web_premium.price;
+      document.getElementById("price-web_vip").value = currentCfg.formats.web_vip.price;
+
+      const extrasGrid = document.getElementById("extras-prices-grid");
+      extrasGrid.innerHTML = currentCfg.extras.map((ex, idx) => `
+        <div class="p-4 rounded-2xl bg-stone-50 border border-stone-200 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <span class="text-[11px] font-bold text-stone-800 line-clamp-1">${ex.name}</span>
+              <input type="checkbox" id="extra-vis-${idx}" ${ex.visibleToClient !== false ? 'checked' : ''} title="Visible para el cliente" class="accent-emerald-600 w-4 h-4" />
+            </div>
+            <div class="flex items-center gap-1">
+              <span class="font-bold text-stone-500">+$</span>
+              <input type="number" id="extra-price-${idx}" value="${ex.price}" class="w-full rounded-lg border border-stone-300 bg-white px-2.5 py-1 text-sm font-bold text-stone-900" />
+              <span class="text-xs font-bold text-stone-500">MXN</span>
+            </div>
+          </div>
+          <span class="text-[10px] text-stone-400 mt-1.5">Casilla = Visible al cliente</span>
+        </div>
+      `).join("");
+
+      // 4. Cargar Credenciales Admin (Solo muestra el hash SHA-256, nunca la clave en texto plano)
+      document.getElementById("admin-ownerName").value = currentCreds.ownerName;
+      document.getElementById("admin-username").value = currentCreds.username;
+      document.getElementById("admin-pin").value = "";
+      document.getElementById("admin-current-hash").textContent = currentCreds.pinHash;
+
+      renderEventsAdminGrid();
+    }
+
+    function copyCurrentAdminHash() {
+      if (!currentCreds || !currentCreds.pinHash) return;
+      navigator.clipboard.writeText(currentCreds.pinHash);
+      showToast("Hash SHA-256 copiado al portapapeles");
+    }
+
+    // =====================================================================
+    // FUNCIONES DEL GESTOR DE CLIENTES Y PEDIDOS (CRM)
+    // =====================================================================
+    function toggleNewOrderBox(show) {
+      document.getElementById("new-order-box").classList.toggle("hidden", !show);
+    }
+
+    function autoFillOrderPrice() {
+      const sel = document.getElementById("ord-package");
+      const fmtKey = sel.value;
+      const price = (currentCfg && currentCfg.formats[fmtKey]) ? currentCfg.formats[fmtKey].price : 1490;
+      document.getElementById("ord-totalAmount").value = price;
+      document.getElementById("ord-paidAmount").value = Math.round(price / 2);
+    }
+
+    function createNewClientOrder() {
+      const clientName = document.getElementById("ord-clientName").value.trim() || "Cliente Nuevo";
+      const clientPhone = document.getElementById("ord-clientPhone").value.trim() || "5215500000000";
+      const presetBase = document.getElementById("ord-presetBase").value || "boda";
+      const basePresetObj = currentPresets[presetBase] || currentPresets.boda;
+      const eventTitle = document.getElementById("ord-eventTitle").value.trim() || basePresetObj.title;
+      const eventDate = document.getElementById("ord-eventDate").value || "2027-05-15";
+      const pkgKey = document.getElementById("ord-package").value;
+      const packageName = currentCfg.formats[pkgKey] ? currentCfg.formats[pkgKey].name : "Invitación Web";
+      const totalAmount = Number(document.getElementById("ord-totalAmount").value) || 1490;
+      const paidAmount = Number(document.getElementById("ord-paidAmount").value) || 0;
+      const status = document.getElementById("ord-status").value;
+
+      const invClone = JSON.parse(JSON.stringify(basePresetObj));
+      invClone.title = eventTitle;
+      if (eventDate) {
+        invClone.date = eventDate + "T18:00:00";
+      }
+
+      const newOrder = {
+        id: "cli_" + Date.now().toString().slice(-6),
+        createdAt: new Date().toISOString().slice(0, 10),
+        clientName,
+        clientPhone,
+        eventType: basePresetObj.categoryLabel,
+        eventTitle,
+        eventDate,
+        packageName,
+        totalAmount,
+        paidAmount,
+        status,
+        presetBase,
+        vipGuestsRaw: "Familia Invitada, 4\nPadrinos de Honor, 2",
+        invitationData: invClone
+      };
+
+      window.upsertClientOrder(newOrder);
+      toggleNewOrderBox(false);
+      renderCrmOrders();
+      showToast(`Cliente "${clientName}" registrado con éxito`);
+    }
+
+    function renderCrmOrders() {
+      const orders = window.getClientOrders();
+      const tbody = document.getElementById("crm-orders-tbody");
+
+      let totalSales = 0;
+      let totalPaid = 0;
+      let deliveredCount = 0;
+      let inDesignCount = 0;
+
+      orders.forEach(o => {
+        totalSales += Number(o.totalAmount || 0);
+        totalPaid += Number(o.paidAmount || 0);
+        if (o.status === "Entregado") deliveredCount++;
+        if (o.status === "En diseño" || o.status === "Anticipo 50% pagado") inDesignCount++;
+      });
+
+      const pending = Math.max(0, totalSales - totalPaid);
+      document.getElementById("crm-stat-total").textContent = formatMXN(totalSales) + " MXN";
+      document.getElementById("crm-stat-count").textContent = `${orders.length} ${orders.length === 1 ? 'pedido registrado' : 'pedidos registrados'}`;
+      document.getElementById("crm-stat-paid").textContent = formatMXN(totalPaid) + " MXN";
+      document.getElementById("crm-stat-pending").textContent = formatMXN(pending) + " MXN";
+      document.getElementById("crm-stat-delivered").textContent = `${deliveredCount} Entregados / ${inDesignCount} Activos`;
+
+      const statusColors = {
+        "Cotizado": "bg-stone-100 text-stone-700 border-stone-300",
+        "Anticipo 50% pagado": "bg-amber-100 text-amber-900 border-amber-300",
+        "En diseño": "bg-sky-100 text-sky-900 border-sky-300",
+        "Entregado": "bg-emerald-100 text-emerald-900 border-emerald-300"
+      };
+
+      tbody.innerHTML = orders.map(ord => {
+        const balance = Math.max(0, Number(ord.totalAmount || 0) - Number(ord.paidAmount || 0));
+        const badgeStyle = statusColors[ord.status] || statusColors["Cotizado"];
+
+        const waClientMsg = [
+          `¡Hola *${ord.clientName}*! 👋 Te escribimos de *${currentCfg ? currentCfg.brandName : 'Aura Digital'}* respecto a la invitación de *${ord.eventTitle}* (${ord.eventType}).`,
+          ``,
+          `📌 *Estatus actual:* ${ord.status}`,
+          `💎 *Paquete:* ${ord.packageName}`,
+          `💰 *Total:* ${formatMXN(ord.totalAmount)} MXN | *Pagado:* ${formatMXN(ord.paidAmount)} MXN | *Saldo:* ${formatMXN(balance)} MXN`
+        ].join("\n");
+
+        const waUrl = `https://wa.me/${(ord.clientPhone || "").replace(/[^0-9]/g, "")}?text=${encodeURIComponent(waClientMsg)}`;
+
+        return `
+          <tr class="hover:bg-stone-50 transition">
+            <td class="py-3.5 px-4">
+              <p class="font-bold text-stone-900 text-sm">${ord.eventTitle}</p>
+              <p class="text-stone-500">${ord.eventType} • Cliente: <strong>${ord.clientName}</strong></p>
+              <span class="text-[11px] text-stone-400"><i class="fa-regular fa-calendar mr-1"></i>Evento: ${ord.eventDate || 'Por definir'}</span>
+            </td>
+            <td class="py-3.5 px-3">
+              <span class="font-semibold text-stone-800 block">${ord.packageName}</span>
+            </td>
+            <td class="py-3.5 px-3">
+              <select onchange="updateOrderStatus('${ord.id}', this.value)" class="rounded-xl border px-2.5 py-1.5 text-xs font-bold ${badgeStyle} focus:outline-none">
+                <option value="Cotizado" ${ord.status === 'Cotizado' ? 'selected' : ''}>Cotizado</option>
+                <option value="Anticipo 50% pagado" ${ord.status === 'Anticipo 50% pagado' ? 'selected' : ''}>Anticipo 50% pagado</option>
+                <option value="En diseño" ${ord.status === 'En diseño' ? 'selected' : ''}>En diseño</option>
+                <option value="Entregado" ${ord.status === 'Entregado' ? 'selected' : ''}>Entregado</option>
+              </select>
+            </td>
+            <td class="py-3.5 px-3">
+              <div class="space-y-1">
+                <p>Total: <strong>${formatMXN(ord.totalAmount)}</strong></p>
+                <div class="flex items-center gap-1">
+                  <span class="text-emerald-700 font-semibold">Pagado: $</span>
+                  <input type="number" value="${ord.paidAmount}" onchange="updateOrderPaid('${ord.id}', this.value)" class="w-20 rounded border border-stone-300 px-1.5 py-0.5 text-xs font-bold text-emerald-800" />
+                  ${balance > 0 ? `<button onclick="updateOrderPaid('${ord.id}', ${ord.totalAmount})" class="px-1.5 py-0.5 rounded bg-emerald-100 hover:bg-emerald-200 text-emerald-900 text-[10px] font-bold" title="Marcar como 100% Liquidado">Liquidar</button>` : `<span class="text-[10px] font-bold text-emerald-600"><i class="fa-solid fa-check"></i> Liquidado</span>`}
+                </div>
+                ${balance > 0 ? `<p class="text-[11px] font-bold text-amber-700">Restan: ${formatMXN(balance)} MXN</p>` : ``}
+              </div>
+            </td>
+            <td class="py-3.5 px-4 text-right space-x-1 whitespace-nowrap">
+              <a href="generador.html?cliente=${ord.id}" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold shadow-sm transition" title="Diseñar y gestionar pases VIP de este cliente">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Diseñar Invitación
+              </a>
+              <a href="invitacion.html?cliente=${ord.id}&formato=web" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 font-semibold transition" title="Ver Invitación">
+                <i class="fa-solid fa-eye"></i>
+              </a>
+              <a href="${waUrl}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition" title="Contactar al cliente por WhatsApp">
+                <i class="fa-brands fa-whatsapp"></i>
+              </a>
+              <button onclick="removeClientOrder('${ord.id}')" class="inline-flex items-center px-2 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 transition" title="Eliminar pedido">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function updateOrderStatus(orderId, newStatus) {
+      const ord = window.getClientOrderById(orderId);
+      if (ord) {
+        ord.status = newStatus;
+        if (newStatus === "Entregado") {
+          ord.paidAmount = ord.totalAmount;
+        }
+        window.upsertClientOrder(ord);
+        renderCrmOrders();
+        showToast(`Estatus actualizado a: ${newStatus}`);
+      }
+    }
+
+    function updateOrderPaid(orderId, newPaid) {
+      const ord = window.getClientOrderById(orderId);
+      if (ord) {
+        ord.paidAmount = Number(newPaid) || 0;
+        window.upsertClientOrder(ord);
+        renderCrmOrders();
+        showToast("Monto cobrado actualizado");
+      }
+    }
+
+    function removeClientOrder(orderId) {
+      if (confirm("¿Seguro que deseas eliminar este pedido del registro?")) {
+        window.deleteClientOrder(orderId);
+        renderCrmOrders();
+      }
+    }
+
+    // =====================================================================
+    // FUNCIONES DE VISIBILIDAD Y CONFIGURACIÓN
+    // =====================================================================
+    function applyQuickVisibilityPreset(mode) {
+      if (mode === "concierge") {
+        document.getElementById("vis-showFormatsSection").checked = true;
+        document.getElementById("vis-formatPdfVisible").checked = true;
+        document.getElementById("vis-formatVideoVisible").checked = true;
+        document.getElementById("vis-formatWebVisible").checked = true;
+        document.getElementById("vis-showModalitiesSection").checked = true;
+        document.getElementById("vis-modalityConciergeVisible").checked = true;
+        document.getElementById("vis-modalityHibridoVisible").checked = true;
+        document.getElementById("vis-modalityAutogestionVisible").checked = false;
+        document.getElementById("vis-allowClientGenerator").checked = false;
+        document.getElementById("vis-showPublicPrices").checked = true;
+        document.getElementById("vis-showPromoBanner").checked = true;
+        document.getElementById("vis-showCatalogSection").checked = true;
+        document.getElementById("vis-showQuoterSection").checked = true;
+        document.getElementById("vis-showFormatSwitcherInDemo").checked = true;
+      } else if (mode === "all") {
+        document.querySelectorAll('[id^="vis-"]').forEach(cb => cb.checked = true);
+      }
+      saveAllSettings();
+    }
+
+    function renderEventsAdminGrid() {
+      const grid = document.getElementById("events-admin-grid");
+      const keys = Object.keys(currentPresets);
+
+      grid.innerHTML = keys.map(key => {
+        const ev = currentPresets[key];
+        const isEnabled = ev.enabled !== false;
+        return `
+          <div class="rounded-2xl border ${isEnabled ? 'border-stone-200 bg-white' : 'border-stone-200 bg-stone-100 opacity-60'} overflow-hidden shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="relative h-32">
+                <img src="${ev.heroImage}" alt="${ev.categoryLabel}" class="w-full h-full object-cover" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent p-3 flex flex-col justify-end text-white">
+                  <span class="text-[9px] uppercase tracking-widest text-amber-300 font-bold">${ev.badgeText}</span>
+                  <h4 class="font-serif-luxury text-xl font-bold leading-none">${ev.categoryLabel}</h4>
+                  <p class="text-xs text-stone-200 mt-0.5">${ev.title}</p>
+                </div>
+              </div>
+            </div>
+            <div class="p-3.5 flex items-center justify-between gap-2 bg-stone-50 border-t border-stone-200/80 text-xs">
+              <label class="flex items-center gap-2 cursor-pointer font-semibold text-stone-800">
+                <input type="checkbox" ${isEnabled ? 'checked' : ''} onchange="toggleEventEnabled('${key}', this.checked)" class="accent-emerald-600 w-4 h-4" />
+                <span>${isEnabled ? 'Visible al Cliente' : 'Oculto al Cliente'}</span>
+              </label>
+              <div class="flex items-center gap-1.5">
+                <a href="generador.html?plantilla=${key}" class="px-2.5 py-1 rounded-lg bg-white border border-stone-300 hover:border-amber-700 text-stone-700 font-semibold">
+                  <i class="fa-solid fa-pen"></i> Editar
+                </a>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function toggleEventEnabled(key, checked) {
+      if (currentPresets[key]) {
+        currentPresets[key].enabled = checked;
+        window.saveEventPresets(currentPresets);
+        renderEventsAdminGrid();
+        showToast(checked ? "Evento activado para el cliente" : "Evento ocultado al cliente");
+      }
+    }
+
+    function toggleNewEventModal(show) {
+      document.getElementById("new-event-box").classList.toggle("hidden", !show);
+    }
+
+    function createNewEventPreset() {
+      const cat = document.getElementById("new-ev-category").value.trim() || "Evento Especial";
+      const badge = document.getElementById("new-ev-badge").value.trim() || "Celebración Especial";
+      const title = document.getElementById("new-ev-title").value.trim() || "Festejado(a)";
+      const color = document.getElementById("new-ev-color").value;
+      const melody = document.getElementById("new-ev-melody").value;
+      const img = document.getElementById("new-ev-img").value.trim() || window.DEFAULT_EVENT_PRESETS.boda.heroImage;
+
+      const id = cat.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "_") + "_" + Date.now().toString().slice(-3);
+
+      const newPreset = JSON.parse(JSON.stringify(window.DEFAULT_EVENT_PRESETS.bautizo));
+      newPreset.id = id;
+      newPreset.enabled = true;
+      newPreset.categoryLabel = cat;
+      newPreset.badgeText = badge;
+      newPreset.title = title;
+      newPreset.subtitle = `Te invitamos a compartir con nosotros esta celebración de ${cat}`;
+      newPreset.theme.primary = color;
+      newPreset.theme.melodyType = melody;
+      newPreset.heroImage = img;
+      newPreset.rsvpWhatsapp = document.getElementById("cfg-whatsapp").value.trim() || currentCfg.whatsappNumber;
+
+      currentPresets[id] = newPreset;
+      window.saveEventPresets(currentPresets);
+      toggleNewEventModal(false);
+      renderEventsAdminGrid();
+      showToast("Nuevo tipo de evento añadido al catálogo");
+    }
+
+    function saveAllSettings(silent = false) {
+      currentCfg.clientVisibility = {
+        showFormatsSection: document.getElementById("vis-showFormatsSection").checked,
+        formatPdfVisible: document.getElementById("vis-formatPdfVisible").checked,
+        formatVideoVisible: document.getElementById("vis-formatVideoVisible").checked,
+        formatWebVisible: document.getElementById("vis-formatWebVisible").checked,
+        showModalitiesSection: document.getElementById("vis-showModalitiesSection").checked,
+        modalityConciergeVisible: document.getElementById("vis-modalityConciergeVisible").checked,
+        modalityHibridoVisible: document.getElementById("vis-modalityHibridoVisible").checked,
+        modalityAutogestionVisible: document.getElementById("vis-modalityAutogestionVisible").checked,
+        allowClientGenerator: document.getElementById("vis-allowClientGenerator").checked,
+        showPublicPrices: document.getElementById("vis-showPublicPrices").checked,
+        showPromoBanner: document.getElementById("vis-showPromoBanner").checked,
+        showCatalogSection: document.getElementById("vis-showCatalogSection").checked,
+        showQuoterSection: document.getElementById("vis-showQuoterSection").checked,
+        showFormatSwitcherInDemo: document.getElementById("vis-showFormatSwitcherInDemo").checked
+      };
+
+      currentCfg.brandName = document.getElementById("cfg-brandName").value.trim() || "Aura Digital";
+      currentCfg.tagline = document.getElementById("cfg-tagline").value.trim() || "Invitaciones & Eventos";
+      currentCfg.whatsappNumber = document.getElementById("cfg-whatsapp").value.trim() || "5215512345678";
+      currentCfg.promoBanner = document.getElementById("cfg-promoBanner").value.trim();
+
+      currentCfg.formats.pdf.price = Number(document.getElementById("price-pdf").value) || 490;
+      currentCfg.formats.video.price = Number(document.getElementById("price-video").value) || 790;
+      currentCfg.formats.web_esencial.price = Number(document.getElementById("price-web_esencial").value) || 890;
+      currentCfg.formats.web_premium.price = Number(document.getElementById("price-web_premium").value) || 1490;
+      currentCfg.formats.web_vip.price = Number(document.getElementById("price-web_vip").value) || 2290;
+
+      currentCfg.extras.forEach((ex, idx) => {
+        const priceIn = document.getElementById(`extra-price-${idx}`);
+        const visIn = document.getElementById(`extra-vis-${idx}`);
+        if (priceIn) ex.price = Number(priceIn.value) || 0;
+        if (visIn) ex.visibleToClient = visIn.checked;
+      });
+
+      currentCreds.ownerName = document.getElementById("admin-ownerName").value.trim() || "Administrador";
+      currentCreds.username = document.getElementById("admin-username").value.trim() || "admin";
+      const newPinValue = document.getElementById("admin-pin").value.trim();
+      if (newPinValue) {
+        currentCreds.pinHash = window.hashAdminSecret(newPinValue);
+        document.getElementById("admin-pin").value = "";
+        document.getElementById("admin-current-hash").textContent = currentCreds.pinHash;
+      }
+
+      window.saveBusinessConfig(currentCfg);
+      window.saveEventPresets(currentPresets);
+      window.saveAdminCredentials(currentCreds);
+      document.getElementById("header-admin-name").textContent = `Admin: ${currentCreds.ownerName}`;
+      window.renderAdminFloatingBar();
+
+      if (!silent) {
+        showToast("¡Configuración, precios y permisos guardados!");
+      }
+    }
+
+    function previewSiteAsClient() {
+      saveAllSettings(true);
+      window.setPreviewAsClient(true);
+      window.location.href = "index.html";
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById("save-toast");
+      document.getElementById("save-toast-text").textContent = msg;
+      toast.classList.remove("hidden");
+      setTimeout(() => toast.classList.add("hidden"), 3000);
+    }
+
+    function exportBusinessBackup() {
+      saveAllSettings(true);
+      const backup = {
+        businessConfig: currentCfg,
+        eventPresets: currentPresets,
+        clientOrders: window.getClientOrders()
+      };
+      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "respaldo-completo-agencia-invitaciones.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function confirmResetFactory() {
+      if (confirm("¿Deseas restaurar los permisos, precios y catálogo a sus valores originales de fábrica?")) {
+        window.resetAllBusinessSettings();
+        initConfigPage();
+        showToast("Valores de fábrica restaurados");
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", checkAuthAndInit);
+  </script>
+</body>
+</html>

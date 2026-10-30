@@ -1,0 +1,9 @@
+# Archivos de sistema y respaldos locales privados
+.DS_Store
+Thumbs.db
+*.log
+respaldo-*.json
+configuracion-negocio-*.json
+.env
+.env.*
+node_modules/
